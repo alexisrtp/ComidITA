@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro | ComidITA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #FDFCF7;
+            --brand-light: #fcf4e8;
+            --white: #FFFFFF;
+            --text-dark: #1E2A38;
+            --text-muted: #666666;
+            --accent-red: #E24A29;
+        }
+
+        body, html {
+            margin: 0; padding: 0; height: 100%;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(to right, var(--brand-light) 0%, var(--brand-light) 35%, var(--bg-main) 35%, var(--bg-main) 100%);
+            display: flex; justify-content: center; align-items: center;
+        }
+
+        .cards-wrapper { display: flex; gap: 40px; align-items: center; }
+
+        .mobile-card {
+            width: 340px; height: 680px; /* Un poco más alta para los campos extra */
+            border-radius: 35px; box-shadow: 0 25px 50px rgba(0, 0, 0, 0.08);
+            position: relative; overflow: hidden;
+        }
+
+        /* Tarjeta Izquierda (Branding) */
+        .card-left {
+            background-color: var(--white);
+            display: flex; flex-direction: column; padding: 40px 30px; box-sizing: border-box; z-index: 2;
+        }
+        .image-container {
+            width: 100%; height: 250px; display: flex; justify-content: center; align-items: center; margin-bottom: 60px; position: relative;
+        }
+        .main-logo { width: 250px; height: 250px; object-fit: contain; mix-blend-mode: multiply; }
+        .circle-bg { position: absolute; width: 180px; height: 180px; background-color: var(--brand-light); border-radius: 50%; z-index: -1; }
+
+        .brand-header { font-size: 22px; font-weight: 700; color: var(--text-dark); margin-bottom: 40px; text-align: center; line-height: 1.3;}
+        .left-footer { margin-top: auto; }
+        .left-footer h3 { font-size: 15px; font-weight: 700; margin: 0 0 5px 0; color: var(--text-dark); }
+        .left-footer p { font-size: 12px; color: var(--text-muted); margin: 0; }
+
+        /* Tarjeta Derecha (Formulario) */
+        .card-right {
+            background-color: var(--bg-main); transform: translateY(60px); z-index: 3; display: flex; flex-direction: column;
+        }
+        .top-section {
+            background-color: var(--brand-light); padding: 40px 30px 0 30px; position: relative; flex-grow: 1; z-index: 2;
+        }
+        .login-header h2 { font-size: 24px; font-weight: 700; margin: 0 0 5px 0; color: var(--text-dark); }
+        .login-header p { font-size: 13px; font-weight: 500; margin: 0 0 20px 0; color: var(--text-dark); }
+
+        .input-group { position: relative; margin-bottom: 12px; }
+        .input-group input {
+            width: 100%; padding: 12px 20px; border: none; border-radius: 12px;
+            font-family: 'Poppins', sans-serif; font-size: 12px; font-weight: 600;
+            color: var(--text-dark); box-sizing: border-box; box-shadow: 0 4px 15px rgba(0,0,0,0.03); outline: none;
+        }
+        .input-group input::placeholder { color: #aaa; font-weight: 500; }
+
+        /* Estilo para los Radio Buttons (HCI) */
+        .account-type {
+            display: flex; gap: 10px; margin-bottom: 15px;
+        }
+        .type-option {
+            flex: 1; text-align: center; background: var(--white); padding: 10px;
+            border-radius: 12px; font-size: 12px; font-weight: 600; cursor: pointer;
+            border: 2px solid transparent; color: var(--text-muted); transition: 0.2s;
+        }
+        .type-option.selected {
+            border-color: var(--accent-red); color: var(--accent-red); background: #FFF0ED;
+        }
+        .account-type input[type="radio"] { display: none; }
+
+        .btn-submit {
+            background-color: var(--accent-red); color: var(--white); border: none;
+            width: 100%; padding: 15px; border-radius: 12px; font-weight: 700;
+            font-size: 14px; cursor: pointer; margin-top: 10px; box-shadow: 0 10px 20px rgba(226, 74, 41, 0.3); transition: transform 0.2s;
+        }
+        .btn-submit:hover { transform: scale(1.02); }
+
+        .error-msg { color: var(--accent-red); font-size: 11px; font-weight: 600; margin-bottom: 10px; }
+
+        .bottom-links {
+            text-align: center; padding: 20px; font-size: 12px; color: var(--text-dark);
+        }
+        .bottom-links a { color: var(--accent-red); font-weight: 700; text-decoration: none; }
+    </style>
+</head>
+<body>
+
+    <div class="cards-wrapper">
+        <!-- Tarjeta Izquierda -->
+        <div class="mobile-card card-left">
+            <div class="brand-header">Únete a la red del Instituto</div>
+            <div class="image-container">
+                <div class="circle-bg"></div>
+                <img src="{% static 'logo.jpg' %}" alt="ComidITA Logo" class="main-logo" onerror="this.style.display='none'">
+            </div>
+            <div class="left-footer">
+                <h3>ComidITA</h3>
+                <p>La red de emprendedores</p>
+            </div>
+        </div>
+
+        <!-- Tarjeta Derecha (Formulario) -->
+        <div class="mobile-card card-right">
+            <div class="top-section">
+                <div class="login-header">
+                    <h2>Crea tu cuenta</h2>
+                    <p>Completa tus datos para iniciar</p>
+                </div>
+
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="error-msg">⚠️ {{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+
+                <form method="POST">
+                    {% csrf_token %}
+
+                    <div class="input-group">
+                        <input type="text" name="nombre" placeholder="Tu nombre o apodo" required autofocus>
+                    </div>
+
+                    <div class="input-group">
+                        <input type="email" name="correo" placeholder="Correo institucional" required>
+                    </div>
+
+                    <div class="input-group">
+                        <input type="password" name="contra1" placeholder="Crea una contraseña" required>
+                    </div>
+
+                    <div class="input-group">
+                        <input type="password" name="contra2" placeholder="Confirma tu contraseña" required>
+                    </div>
+
+                    <!-- Selector de Tipo de Cuenta -->
+                    <div class="account-type">
+                        <label class="type-option selected" id="lbl-cliente">
+                            <input type="radio" name="tipo_cuenta" value="cliente" checked onchange="toggleNegocio(this.value)">
+                            🍔 Soy Cliente
+                        </label>
+                        <label class="type-option" id="lbl-emprendedor">
+                            <input type="radio" name="tipo_cuenta" value="emprendedor" onchange="toggleNegocio(this.value)">
+                            🏪 Soy Emprendedor
+                        </label>
+                    </div>
+
+                    <!-- Campo oculto: Nombre del negocio (Solo aparece si es emprendedor) -->
+                    <div class="input-group" id="campo-negocio" style="display: none;">
+                        <input type="text" name="nombre_negocio" placeholder="Nombre de tu negocio">
+                    </div>
+
+                    <button type="submit" class="btn-submit">Registrarme</button>
+                </form>
+            </div>
+
+            <div class="bottom-links">
+                ¿Ya tienes cuenta? <a href="{% url 'login' %}">Inicia sesión</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script para ocultar/mostrar el campo del negocio -->
+    <script>
+        function toggleNegocio(tipo) {
+            const campoNegocio = document.getElementById('campo-negocio');
+            const lblCliente = document.getElementById('lbl-cliente');
+            const lblEmprend = document.getElementById('lbl-emprendedor');
+
+            if(tipo === 'emprendedor') {
+                campoNegocio.style.display = 'block';
+                // Cambiar estilos visuales
+                lblEmprend.classList.add('selected');
+                lblCliente.classList.remove('selected');
+                campoNegocio.querySelector('input').required = true; // Hacerlo obligatorio
+            } else {
+                campoNegocio.style.display = 'none';
+                lblCliente.classList.add('selected');
+                lblEmprend.classList.remove('selected');
+                campoNegocio.querySelector('input').required = false; // Quitar obligatoriedad
+            }
+        }
+    </script>
+</body>
+</html>
