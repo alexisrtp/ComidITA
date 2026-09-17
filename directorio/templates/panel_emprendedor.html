@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Mi Panel - ComidITA</title>
+    <style>
+        body { background-color: #FDF8F5; font-family: sans-serif; color: #333; padding: 20px; }
+        .tarjeta { background-color: #FFFFFF; border-radius: 10px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        .btn { background-color: #E65100; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>Bienvenido a tu panel, {{ negocio.nombre }}</h1>
+
+    <div class="tarjeta">
+        <h2>Tus Productos</h2>
+        <a href="{% url 'agregar_producto' %}" class="btn" style="text-decoration:none; display:inline-block; margin-bottom:15px; text-align:center;">+ Agregar Producto</a>
+        <ul>
+            {% for producto in productos %}
+                <li>{{ producto.nombre }} - ${{ producto.precio }}</li>
+            {% empty %}
+                <p>Aún no tienes productos en tu menú.</p>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>

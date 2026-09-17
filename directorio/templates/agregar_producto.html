@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Agregar Producto - ComidITA</title>
+    <style>
+        body { background-color: #FDF8F5; font-family: sans-serif; color: #333; padding: 20px; }
+        .tarjeta { background-color: #FFFFFF; border-radius: 10px; padding: 30px; max-width: 500px; margin: 0 auto; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .btn { background-color: #E65100; color: white; border: none; padding: 12px 20px; border-radius: 5px; cursor: pointer; width: 100%; font-weight: bold; margin-top: 15px; }
+        .form-control { width: 100%; padding: 10px; margin-top: 5px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        label { font-weight: bold; font-size: 14px; }
+        .link-volver { color: #E65100; text-decoration: none; display: block; text-align: center; margin-top: 15px; }
+    </style>
+</head>
+<body>
+    <div class="tarjeta">
+        <h2 style="text-align: center;">Agrega un platillo a tu menú</h2>
+
+        <form method="POST">
+            {% csrf_token %} <!-- Etiqueta de seguridad obligatoria en Django -->
+            {{ form.as_p }}  <!-- Aquí Django inyecta mágicamente las casillas -->
+
+            <button type="submit" class="btn">Guardar Producto</button>
+        </form>
+
+        <a href="{% url 'panel_emprendedor' %}" class="link-volver">← Volver al panel</a>
+    </div>
+</body>
+</html>

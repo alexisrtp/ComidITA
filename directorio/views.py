@@ -4,6 +4,10 @@ from django.contrib import messages
 from .models import Negocio
 from django.contrib.auth.models import User
 from django.db.models import Q
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from .models import Negocio, Producto, Pedido
+from .forms import ProductoForm
 
 
 def login_vista(request):
@@ -94,3 +98,38 @@ def registro_view(request):
     # Si entra por primera vez, solo mostramos la página web
     return render(request, 'registro.html')
 
+
+@login_required
+def panel_emprendedor(request):
+    # Buscamos el negocio del usuario logueado
+    negocio = Negocio.objects.filter(propietario=request.user).first()
+
+    # Si tiene un negocio registrado, traemos su menú y pedidos pendientes
+    productos = Producto.objects.filter(negocio=negocio) if negocio else []
+    pedidos = Pedido.objects.filter(negocio=negocio, estado='PENDIENTE') if negocio else []
+
+    context = {
+        'negocio': negocio,
+        'productos': productos,
+        'pedidos': pedidos,
+    }
+    return render(request, 'panel_emprendedor.html', context)
+
+
+@login_required
+def agregar_producto(request):
+    # Buscamos de quién es el negocio
+    negocio = Negocio.objects.filter(propietario=request.user).first()
+
+    if request.method == 'POST':
+        form = ProductoForm(request.POST)
+        if form.is_valid():
+            # Pausamos el guardado un segundo para inyectarle de quién es el producto
+            producto = form.save(commit=False)
+            producto.negocio = negocio
+            producto.save()  # Ahora sí lo guardamos en MySQL
+            return redirect('panel_emprendedor')  # Lo regresamos a su panel
+    else:
+        form = ProductoForm()  # Mostramos el formulario vacío
+
+    return render(request, 'agregar_producto.html', {'form': form})
