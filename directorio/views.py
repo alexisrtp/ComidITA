@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from .models import Negocio
 from django.contrib.auth.models import User
+from django.db.models import Q
 
 
 def login_vista(request):
@@ -35,11 +36,25 @@ def logout_view(request):
 
 # --- NUEVA VISTA PARA EL CLIENTE ---
 def inicio_cliente_view(request):
-    # Extraemos todos los negocios registrados en MySQL para mostrarlos en la pantalla
-    negocios = Negocio.objects.all()
+    # 1. Capturamos lo que el usuario escribió en la barra de búsqueda
+    query = request.GET.get('q', '')
 
-    # Enviamos los datos al HTML
-    return render(request, 'inicio_cliente.html', {'negocios': negocios})
+    # 2. Si el usuario escribió algo, filtramos la base de datos
+    if query:
+        # Buscamos en el nombre OR (|) en la descripción del negocio
+        negocios = Negocio.objects.filter(
+            Q(nombre__icontains=query) |
+            Q(descripcion__icontains=query)
+        ).distinct()
+    else:
+        # Si la barra está vacía, mostramos todos los negocios
+        negocios = Negocio.objects.all()
+
+    # Enviamos los negocios y la palabra buscada al HTML
+    return render(request, 'inicio_cliente.html', {
+        'negocios': negocios,
+        'query': query
+    })
 
 
 def registro_view(request):
@@ -78,3 +93,4 @@ def registro_view(request):
 
     # Si entra por primera vez, solo mostramos la página web
     return render(request, 'registro.html')
+
