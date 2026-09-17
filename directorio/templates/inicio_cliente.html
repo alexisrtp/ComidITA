@@ -5,18 +5,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inicio | ComidITA</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* Se oscureció el fondo para crear contraste y profundidad */
             --bg-main: #F4F3EA;
             --brand-light: #fcf4e8;
             --white: #FFFFFF;
-            --text-dark: #1E2A38;
+            --text-dark: #1A2433; /* Un poco más profundo para mayor contraste */
             --text-muted: #8C98A4;
             --accent-red: #E24A29;
             --accent-hover: #C93E20;
             --sidebar-width: 280px;
+            /* Sombra cálida para el efecto glow */
+            --glow-warm: 0 20px 40px rgba(226, 74, 41, 0.15);
         }
 
         body, html {
@@ -30,21 +31,19 @@
             display: flex;
         }
 
-        /* --- CONTENEDOR PRINCIPAL --- */
         .main-content {
             flex-grow: 1;
             margin-right: var(--sidebar-width);
-            padding: 50px 5%;
+            padding: 40px 5%; /* Reduje un poco el padding superior para mayor dinamismo */
             box-sizing: border-box;
             min-height: 100vh;
         }
 
-        /* --- CABECERA Y BUSCADOR --- */
         .header-section {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 50px;
+            margin-bottom: 25px; /* Reducido para dar espacio a los filtros */
             gap: 20px;
         }
 
@@ -56,34 +55,36 @@
         }
 
         .header-logo {
-            width: 100px; /* Tamaño equilibrado */
-            height: 100px;
+            width: 80px;
+            height: 80px;
             object-fit: contain;
-            mix-blend-mode: multiply; /* Funde el fondo blanco */
+            mix-blend-mode: multiply;
         }
 
         .header-section h1 {
-            font-size: 26px;
-            font-weight: 700;
+            font-size: 28px;
+            font-weight: 800; /* Letra más gruesa para impacto */
+            letter-spacing: -0.5px; /* Letras ligeramente más juntas (diseño moderno) */
             margin: 0;
         }
 
         .search-bar {
             background: var(--white);
             border-radius: 50px;
-            padding: 12px 25px;
+            padding: 14px 25px;
             display: flex;
             align-items: center;
             width: 500px;
             max-width: 45%;
             box-shadow: 0 4px 15px rgba(0,0,0,0.02);
-            border: 1px solid #EAE8DF; /* Borde muy sutil */
-            transition: box-shadow 0.3s, border-color 0.3s;
+            border: 2px solid transparent; /* Preparado para el focus */
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
-        .search-bar:focus-within, .search-bar:hover {
-            box-shadow: 0 8px 25px rgba(0,0,0,0.05);
-            border-color: #DCD8C8;
+        .search-bar:focus-within {
+            border-color: #F8D7D0; /* Borde rojo muy sutil al hacer clic */
+            box-shadow: var(--glow-warm); /* Resplandor cálido */
+            transform: translateY(-2px);
         }
 
         .search-bar input {
@@ -91,13 +92,53 @@
             outline: none;
             width: 100%;
             font-family: 'Poppins', sans-serif;
-            font-size: 13px;
+            font-size: 13.5px;
             margin-left: 10px;
             color: var(--text-dark);
             background: transparent;
         }
 
-        /* --- GRID DE NEGOCIOS (HCI: Appetite Appeal) --- */
+        /* NUEVO: Contenedor de filtros rápidos */
+        .quick-filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 40px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+            /* Ocultar barra de scroll en navegadores webkit */
+            -webkit-overflow-scrolling: touch;
+        }
+        .quick-filters::-webkit-scrollbar { display: none; }
+
+        .filter-pill {
+            background: var(--white);
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            text-decoration: none; /* Evita que los enlaces salgan subrayados */
+        }
+
+        .filter-pill:hover {
+            background: var(--brand-light);
+            color: var(--accent-red);
+            transform: translateY(-2px);
+        }
+
+        .filter-pill.active {
+            background: var(--accent-red);
+            color: var(--white);
+            box-shadow: 0 8px 20px rgba(226, 74, 41, 0.3);
+        }
+
         .negocios-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -106,31 +147,39 @@
 
         .negocio-card {
             background: var(--white);
-            border-radius: 20px;
+            border-radius: 24px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.04);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Animación con rebote sutil */
             position: relative;
             cursor: pointer;
-            border: 1px solid transparent;
+            border: 1px solid rgba(0,0,0,0.02);
             display: flex;
             flex-direction: column;
-            overflow: hidden; /* Mantiene la imagen dentro del borde redondo */
+            overflow: hidden;
         }
 
         .negocio-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 40px rgba(226, 74, 41, 0.12);
+            transform: translateY(-10px);
+            box-shadow: var(--glow-warm); /* El glow térmico cálido */
+            border-color: #FFF0ED;
         }
 
-        /* Nueva Portada de la Tarjeta */
         .card-cover {
-            height: 140px;
+            height: 150px;
             width: 100%;
             background-color: var(--brand-light);
-            /* Imagen de comida por defecto temporal */
-            background-image: url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=600&auto=format&fit=crop');
+            background-image: url('https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?q=80&w=600&auto=format&fit=crop');
             background-size: cover;
             background-position: center;
+            position: relative;
+        }
+
+        /* Degradado interno sobre la foto para que el logo resalte */
+        .card-cover::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; width: 100%; height: 50%;
+            background: linear-gradient(to top, rgba(0,0,0,0.4), transparent);
         }
 
         .card-body {
@@ -138,97 +187,120 @@
             display: flex;
             flex-direction: column;
             flex-grow: 1;
+            position: relative;
         }
 
         .card-header {
             display: flex;
             justify-content: space-between;
             align-items: flex-end;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
 
-        /* Logo flotante sobre la imagen */
+        /* Logo superpuesto con diseño único */
         .negocio-logo {
-            width: 65px;
-            height: 65px;
+            width: 68px;
+            height: 68px;
             background-color: var(--white);
-            border-radius: 15px;
+            /* Borde asimétrico para darle toque orgánico "único" */
+            border-radius: 20px 20px 5px 20px;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 30px;
-            margin-top: -30px; /* Lo sube a la mitad de la imagen */
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            font-size: 32px;
+            margin-top: -34px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
             border: 3px solid var(--white);
             z-index: 2;
         }
 
         .negocio-info h3 {
             margin: 15px 0 5px 0;
-            font-size: 18px;
-            font-weight: 700;
+            font-size: 19px;
+            font-weight: 800;
+            letter-spacing: -0.3px;
         }
 
         .status-badge {
-            font-size: 11px;
-            font-weight: 600;
-            padding: 4px 10px;
+            font-size: 10.5px;
+            font-weight: 700;
+            padding: 5px 12px;
             border-radius: 20px;
             background-color: #E8F5E9;
             color: #2E7D32;
             display: inline-block;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .negocio-card p {
             font-size: 13px;
             color: var(--text-muted);
-            line-height: 1.5;
-            margin-bottom: 20px;
+            line-height: 1.6;
+            margin-bottom: 25px;
             flex-grow: 1;
+            /* Limitar a 2 líneas de texto */
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
 
         .card-footer {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-top: 1px solid #F0F0F0;
-            padding-top: 15px;
+            border-top: 1px dashed #EAE8DF; /* Línea punteada tipo ticket */
+            padding-top: 18px;
         }
 
         .rating {
             display: flex;
             align-items: center;
-            gap: 5px;
-            font-weight: 600;
+            gap: 6px;
+            font-weight: 700;
             font-size: 13px;
         }
 
         .rating svg {
             color: #F4B301;
-            width: 16px;
-            height: 16px;
+            width: 18px;
+            height: 18px;
             fill: #F4B301;
         }
 
-        /* Botón vibrante */
         .btn-ver {
             background-color: var(--accent-red);
             color: var(--white);
             border: none;
-            padding: 10px 20px;
+            padding: 10px 18px;
             border-radius: 12px;
             font-weight: 600;
-            font-size: 12px;
+            font-size: 12.5px;
             cursor: pointer;
-            transition: background-color 0.2s, transform 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s;
+        }
+
+        .btn-ver svg {
+            width: 14px;
+            height: 14px;
+            stroke: currentColor;
+            stroke-width: 2.5;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
         .negocio-card:hover .btn-ver {
             background-color: var(--accent-hover);
-            transform: scale(1.05);
         }
 
-        /* --- MENÚ LATERAL DERECHO (Separado del fondo) --- */
+        /* Micro-interacción: La flecha se mueve al pasar el mouse por la tarjeta */
+        .negocio-card:hover .btn-ver svg {
+            transform: translateX(4px);
+        }
+
         .right-sidebar {
             position: fixed;
             top: 0;
@@ -236,22 +308,20 @@
             width: var(--sidebar-width);
             height: 100vh;
             background: var(--white);
-            /* Sombra hacia la izquierda para dar profundidad real */
-            box-shadow: -10px 0 40px rgba(30, 42, 56, 0.04);
+            box-shadow: -15px 0 50px rgba(30, 42, 56, 0.03); /* Sombra más amplia y suave */
             padding: 40px 25px;
             display: flex;
             flex-direction: column;
             box-sizing: border-box;
             z-index: 100;
-            border-left: 1px solid #F0F0F0;
+            border-left: 1px solid #FDFCF7;
         }
 
         .user-greeting {
             text-align: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
+            margin-bottom: 35px;
+            padding-bottom: 25px;
             border-bottom: 2px solid var(--brand-light);
-            /* Evitar que correos largos rompan el diseño */
             overflow: hidden;
         }
 
@@ -260,16 +330,18 @@
             font-size: 11px;
             color: var(--text-muted);
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
+            font-weight: 600;
         }
 
         .user-greeting h2 {
-            margin: 5px 0 0 0;
-            font-size: 16px;
+            margin: 8px 0 0 0;
+            font-size: 17px;
             color: var(--text-dark);
             white-space: nowrap;
             overflow: hidden;
-            text-overflow: ellipsis; /* Pone "..." si no cabe */
+            text-overflow: ellipsis;
+            font-weight: 700;
         }
 
         .menu-links {
@@ -282,26 +354,27 @@
         .menu-item {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 14px 15px;
-            border-radius: 15px;
+            gap: 14px;
+            padding: 14px 16px;
+            border-radius: 16px;
             color: var(--text-dark);
             text-decoration: none;
             font-weight: 500;
             font-size: 13.5px;
-            transition: background 0.2s, color 0.2s;
+            transition: all 0.2s;
         }
 
         .menu-item svg {
             width: 20px;
             height: 20px;
-            stroke: var(--text-dark);
-            transition: stroke 0.2s;
+            stroke: var(--text-muted); /* Iconos grises por defecto */
+            transition: all 0.2s;
         }
 
         .menu-item:hover {
             background-color: var(--brand-light);
             color: var(--accent-red);
+            transform: translateX(5px); /* Pequeño salto a la derecha */
         }
 
         .menu-item:hover svg {
@@ -309,7 +382,7 @@
         }
 
         .menu-item.active {
-            background-color: var(--brand-light);
+            background-color: #FFF0ED; /* Fondo rojo muy suave */
             color: var(--accent-red);
             font-weight: 600;
         }
@@ -325,7 +398,24 @@
             stroke: var(--accent-red);
         }
         .logout-btn:hover {
-            background-color: #FFF0ED;
+            background-color: var(--accent-red);
+            color: var(--white);
+            transform: translateY(-3px);
+        }
+        .logout-btn:hover svg { stroke: var(--white); }
+
+        /* Estado vacío mejorado */
+        .empty-state {
+            grid-column: 1 / -1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: var(--white);
+            border-radius: 30px;
+            border: 2px dashed #EAE8DF;
+            padding: 80px 20px;
+            text-align: center;
         }
     </style>
 </head>
@@ -341,10 +431,20 @@
             </div>
 
             <form class="search-bar" method="GET" action="{% url 'inicio_cliente' %}">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent-red)" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                 <input type="text" name="q" placeholder="Buscar chilaquiles, postres, negocios..." value="{{ query }}">
                 <button type="submit" style="display: none;"></button>
             </form>
+        </div>
+
+        <!-- Filtros Rápidos convertidos en enlaces dinámicos -->
+        <div class="quick-filters">
+            <a href="{% url 'inicio_cliente' %}" class="filter-pill {% if not query %}active{% endif %}">🔥 Todos</a>
+            <a href="{% url 'inicio_cliente' %}?q=tacos" class="filter-pill {% if query|lower == 'tacos' %}active{% endif %}">🌮 Tacos & Antojitos</a>
+            <a href="{% url 'inicio_cliente' %}?q=comida" class="filter-pill {% if query|lower == 'comida' %}active{% endif %}">🍔 Comida Rápida</a>
+            <a href="{% url 'inicio_cliente' %}?q=postres" class="filter-pill {% if query|lower == 'postres' %}active{% endif %}">🍰 Postres dulces</a>
+            <a href="{% url 'inicio_cliente' %}?q=bebidas" class="filter-pill {% if query|lower == 'bebidas' %}active{% endif %}">🥤 Bebidas frías</a>
+            <a href="{% url 'inicio_cliente' %}?q=saludable" class="filter-pill {% if query|lower == 'saludable' %}active{% endif %}">🥗 Saludable</a>
         </div>
 
         <!-- Contenedor de Negocios -->
@@ -375,14 +475,19 @@
                                 <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
                                 Nuevo
                             </div>
-                            <button class="btn-ver">Ver Menú</button>
+                            <!-- Botón con micro-interacción -->
+                            <button class="btn-ver">
+                                Ver Menú
+                                <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            </button>
                         </div>
                     </div>
                 </div>
             {% empty %}
-                <div style="grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; color: var(--text-muted); padding: 80px 20px; text-align: center;">
-                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ddd" stroke-width="2" style="margin-bottom: 15px;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
-                    <p style="font-size: 15px; margin: 0;">Aún no hay negocios registrados.<br>¡Sé el primero en vender!</p>
+                <div class="empty-state">
+                    <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#EAE8DF" stroke-width="2" style="margin-bottom: 20px;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+                    <h3 style="color: var(--text-dark); margin: 0 0 10px 0; font-size: 20px;">Aún está tranquilo por aquí</h3>
+                    <p style="font-size: 14px; margin: 0; color: var(--text-muted); max-width: 300px;">No hay negocios registrados en este momento. ¡Sé el primero en vender en el campus!</p>
                 </div>
             {% endfor %}
 
