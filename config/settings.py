@@ -136,3 +136,5 @@ MAILERS = {
 }
 
 LOGIN_URL = '/login/'
+
+LOGIN_REDIRECT_URL = 'panel_emprendedor'

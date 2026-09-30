@@ -1,14 +1,11 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-from .models import Negocio
 from django.contrib.auth.models import User
 from django.db.models import Q
-from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from .models import Negocio, Producto, Pedido
 from .forms import ProductoForm
-
 
 def login_vista(request):
     if request.method == 'POST':
@@ -19,11 +16,10 @@ def login_vista(request):
         if usuario is not None:
             login(request, usuario)
 
-            # MAGIA DE DJANGO: Verificamos qué tipo de usuario es
+            # Verificamos qué tipo de usuario es
             if hasattr(usuario, 'negocio'):
-                # Si tiene un negocio asociado, es Emprendedor.
-                # (Por ahora lo mandamos al panel de admin, luego crearemos su propio dashboard)
-                return redirect('/admin/')
+                # Si tiene un negocio asociado, es Emprendedor y va a su panel.
+                return redirect('panel_emprendedor')
             else:
                 # Si NO tiene negocio, es un Cliente (Estudiante). Lo mandamos al inicio.
                 return redirect('inicio_cliente')
