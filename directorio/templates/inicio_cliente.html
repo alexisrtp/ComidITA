@@ -5,19 +5,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inicio | ComidITA</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-main: #F4F3EA;
-            --brand-light: #fcf4e8;
+            /* PALETA DE COLORES CORREGIDA Y CONTRASTADA */
+            --bg-main: #FFFFFF; /* Área de negocios: Blanco puro */
+            --sidebar-bg: #FFF3EB; /* Barra lateral: Naranja/Crema cálido y visible */
+            --brand-light: #FFF3EB;
             --white: #FFFFFF;
-            --text-dark: #1A2433; /* Un poco más profundo para mayor contraste */
+            --text-dark: #1E2A38;
             --text-muted: #8C98A4;
             --accent-red: #E24A29;
-            --accent-hover: #C93E20;
+            --shadow-soft: 0 10px 40px rgba(30, 42, 56, 0.05);
             --sidebar-width: 280px;
-            /* Sombra cálida para el efecto glow */
-            --glow-warm: 0 20px 40px rgba(226, 74, 41, 0.15);
         }
 
         body, html {
@@ -31,10 +31,11 @@
             display: flex;
         }
 
+        /* --- CONTENEDOR PRINCIPAL --- */
         .main-content {
             flex-grow: 1;
             margin-right: var(--sidebar-width);
-            padding: 40px 5%; /* Reduje un poco el padding superior para mayor dinamismo */
+            padding: 50px 5%;
             box-sizing: border-box;
             min-height: 100vh;
         }
@@ -43,7 +44,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 25px; /* Reducido para dar espacio a los filtros */
+            margin-bottom: 30px;
             gap: 20px;
         }
 
@@ -55,36 +56,34 @@
         }
 
         .header-logo {
-            width: 80px;
-            height: 80px;
+            width: 70px;
+            height: 70px;
             object-fit: contain;
+            border-radius: 10px;
             mix-blend-mode: multiply;
         }
 
         .header-section h1 {
-            font-size: 28px;
-            font-weight: 800; /* Letra más gruesa para impacto */
-            letter-spacing: -0.5px; /* Letras ligeramente más juntas (diseño moderno) */
+            font-size: 26px;
+            font-weight: 700;
             margin: 0;
         }
 
         .search-bar {
             background: var(--white);
             border-radius: 50px;
-            padding: 14px 25px;
+            padding: 12px 25px;
             display: flex;
             align-items: center;
-            width: 500px;
-            max-width: 45%;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
-            border: 2px solid transparent; /* Preparado para el focus */
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            width: 550px;
+            max-width: 50%;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            border: 1px solid #f0f0f0;
+            transition: box-shadow 0.3s;
         }
 
-        .search-bar:focus-within {
-            border-color: #F8D7D0; /* Borde rojo muy sutil al hacer clic */
-            box-shadow: var(--glow-warm); /* Resplandor cálido */
-            transform: translateY(-2px);
+        .search-bar:hover {
+            box-shadow: 0 8px 25px rgba(226, 74, 41, 0.08);
         }
 
         .search-bar input {
@@ -92,50 +91,51 @@
             outline: none;
             width: 100%;
             font-family: 'Poppins', sans-serif;
-            font-size: 13.5px;
+            font-size: 13px;
             margin-left: 10px;
             color: var(--text-dark);
             background: transparent;
         }
 
-        /* NUEVO: Contenedor de filtros rápidos */
         .quick-filters {
             display: flex;
-            gap: 15px;
+            gap: 12px;
             margin-bottom: 40px;
             overflow-x: auto;
             padding-bottom: 10px;
-            /* Ocultar barra de scroll en navegadores webkit */
-            -webkit-overflow-scrolling: touch;
         }
+
         .quick-filters::-webkit-scrollbar { display: none; }
 
         .filter-pill {
             background: var(--white);
+            border: 1px solid #EAEAEA;
             padding: 10px 20px;
             border-radius: 50px;
             font-size: 13px;
             font-weight: 600;
-            color: var(--text-muted);
+            color: var(--text-dark);
+            cursor: pointer;
             display: flex;
             align-items: center;
             gap: 8px;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
-            transition: all 0.2s ease;
             white-space: nowrap;
-            text-decoration: none; /* Evita que los enlaces salgan subrayados */
+            transition: all 0.2s ease;
+            text-decoration: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
         }
 
         .filter-pill:hover {
-            background: var(--brand-light);
+            border-color: var(--accent-red);
             color: var(--accent-red);
             transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(226, 74, 41, 0.1);
         }
 
         .filter-pill.active {
             background: var(--accent-red);
             color: var(--white);
+            border-color: var(--accent-red);
             box-shadow: 0 8px 20px rgba(226, 74, 41, 0.3);
         }
 
@@ -147,99 +147,87 @@
 
         .negocio-card {
             background: var(--white);
-            border-radius: 24px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.04);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Animación con rebote sutil */
+            border-radius: 25px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
             position: relative;
-            cursor: pointer;
-            border: 1px solid rgba(0,0,0,0.02);
             display: flex;
             flex-direction: column;
-            overflow: hidden;
+            border: 1px solid #f9f9f9;
         }
 
         .negocio-card:hover {
-            transform: translateY(-10px);
-            box-shadow: var(--glow-warm); /* El glow térmico cálido */
-            border-color: #FFF0ED;
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(226, 74, 41, 0.12);
         }
 
         .card-cover {
-            height: 150px;
-            width: 100%;
-            background-color: var(--brand-light);
-            background-image: url('https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?q=80&w=600&auto=format&fit=crop');
+            height: 140px;
+            background-color: #EAEAEA;
+            /* Foto de portada de ejemplo, luego la haremos dinámica */
+            background-image: url('https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80');
             background-size: cover;
             background-position: center;
             position: relative;
         }
 
-        /* Degradado interno sobre la foto para que el logo resalte */
-        .card-cover::after {
-            content: '';
-            position: absolute;
-            bottom: 0; left: 0; width: 100%; height: 50%;
-            background: linear-gradient(to top, rgba(0,0,0,0.4), transparent);
-        }
-
         .card-body {
-            padding: 0 25px 25px 25px;
+            padding: 25px 25px 20px 25px;
+            position: relative;
+            flex-grow: 1;
             display: flex;
             flex-direction: column;
-            flex-grow: 1;
-            position: relative;
         }
 
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            margin-bottom: 12px;
-        }
-
-        /* Logo superpuesto con diseño único */
-        .negocio-logo {
-            width: 68px;
-            height: 68px;
+        .negocio-logo-float {
+            width: 65px;
+            height: 65px;
             background-color: var(--white);
-            /* Borde asimétrico para darle toque orgánico "único" */
-            border-radius: 20px 20px 5px 20px;
+            border-radius: 18px;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 32px;
-            margin-top: -34px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            font-size: 28px;
+            position: absolute;
+            top: -35px;
+            left: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
             border: 3px solid var(--white);
-            z-index: 2;
-        }
-
-        .negocio-info h3 {
-            margin: 15px 0 5px 0;
-            font-size: 19px;
-            font-weight: 800;
-            letter-spacing: -0.3px;
         }
 
         .status-badge {
-            font-size: 10.5px;
+            position: absolute;
+            top: -20px;
+            right: 25px;
+            font-size: 10px;
             font-weight: 700;
-            padding: 5px 12px;
+            padding: 6px 12px;
             border-radius: 20px;
             background-color: #E8F5E9;
             color: #2E7D32;
-            display: inline-block;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        .negocio-info {
+            margin-top: 25px;
+            margin-bottom: 10px;
+        }
+
+        .negocio-info h3 {
+            margin: 0 0 5px 0;
+            font-size: 19px;
+            font-weight: 700;
+            color: var(--text-dark);
         }
 
         .negocio-card p {
             font-size: 13px;
             color: var(--text-muted);
             line-height: 1.6;
-            margin-bottom: 25px;
-            flex-grow: 1;
-            /* Limitar a 2 líneas de texto */
+            margin: 0 0 20px 0;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
@@ -250,8 +238,9 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-top: 1px dashed #EAE8DF; /* Línea punteada tipo ticket */
-            padding-top: 18px;
+            border-top: 1px dashed #EAEAEA;
+            padding-top: 15px;
+            margin-top: auto;
         }
 
         .rating {
@@ -260,12 +249,12 @@
             gap: 6px;
             font-weight: 700;
             font-size: 13px;
+            color: var(--text-dark);
         }
 
         .rating svg {
-            color: #F4B301;
-            width: 18px;
-            height: 18px;
+            width: 16px;
+            height: 16px;
             fill: #F4B301;
         }
 
@@ -273,33 +262,20 @@
             background-color: var(--accent-red);
             color: var(--white);
             border: none;
-            padding: 10px 18px;
+            padding: 10px 20px;
             border-radius: 12px;
             font-weight: 600;
-            font-size: 12.5px;
+            font-size: 12px;
             cursor: pointer;
+            transition: all 0.2s;
             display: flex;
             align-items: center;
-            gap: 6px;
-            transition: all 0.3s;
+            gap: 5px;
         }
 
-        .btn-ver svg {
-            width: 14px;
-            height: 14px;
-            stroke: currentColor;
-            stroke-width: 2.5;
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        .negocio-card:hover .btn-ver {
-            background-color: var(--accent-hover);
-        }
-
-        /* Micro-interacción: La flecha se mueve al pasar el mouse por la tarjeta */
-        .negocio-card:hover .btn-ver svg {
-            transform: translateX(4px);
-        }
+        .btn-ver span { transition: transform 0.2s; }
+        .negocio-card:hover .btn-ver span { transform: translateX(3px); }
+        .negocio-card:hover .btn-ver { box-shadow: 0 5px 15px rgba(226, 74, 41, 0.3); }
 
         .right-sidebar {
             position: fixed;
@@ -307,22 +283,21 @@
             right: 0;
             width: var(--sidebar-width);
             height: 100vh;
-            background: var(--white);
-            box-shadow: -15px 0 50px rgba(30, 42, 56, 0.03); /* Sombra más amplia y suave */
+            background: var(--sidebar-bg); /* Aplicamos el tono Crema/Naranja más oscuro */
+            box-shadow: -10px 0 40px rgba(0, 0, 0, 0.03); /* Sombra hacia la izquierda */
             padding: 40px 25px;
             display: flex;
             flex-direction: column;
             box-sizing: border-box;
             z-index: 100;
-            border-left: 1px solid #FDFCF7;
+            border-left: 1px solid rgba(226, 74, 41, 0.08); /* Borde naranja súper sutil */
         }
 
         .user-greeting {
             text-align: center;
-            margin-bottom: 35px;
+            margin-bottom: 40px;
             padding-bottom: 25px;
-            border-bottom: 2px solid var(--brand-light);
-            overflow: hidden;
+            border-bottom: 2px solid rgba(226, 74, 41, 0.1);
         }
 
         .user-greeting p {
@@ -336,45 +311,47 @@
 
         .user-greeting h2 {
             margin: 8px 0 0 0;
-            font-size: 17px;
+            font-size: 18px;
             color: var(--text-dark);
-            white-space: nowrap;
+            word-wrap: break-word;
             overflow: hidden;
             text-overflow: ellipsis;
-            font-weight: 700;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
         }
 
         .menu-links {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 12px;
             flex-grow: 1;
         }
 
         .menu-item {
             display: flex;
             align-items: center;
-            gap: 14px;
-            padding: 14px 16px;
+            gap: 15px;
+            padding: 14px 18px;
             border-radius: 16px;
             color: var(--text-dark);
             text-decoration: none;
             font-weight: 500;
-            font-size: 13.5px;
+            font-size: 14px;
             transition: all 0.2s;
         }
 
         .menu-item svg {
             width: 20px;
             height: 20px;
-            stroke: var(--text-muted); /* Iconos grises por defecto */
-            transition: all 0.2s;
+            stroke: var(--text-dark);
+            transition: stroke 0.2s;
         }
 
         .menu-item:hover {
-            background-color: var(--brand-light);
+            background-color: var(--white); /* El hover se hace blanco para contrastar con el crema */
             color: var(--accent-red);
-            transform: translateX(5px); /* Pequeño salto a la derecha */
+            transform: translateX(5px);
         }
 
         .menu-item:hover svg {
@@ -382,62 +359,46 @@
         }
 
         .menu-item.active {
-            background-color: #FFF0ED; /* Fondo rojo muy suave */
-            color: var(--accent-red);
+            background-color: var(--accent-red);
+            color: var(--white);
             font-weight: 600;
+            box-shadow: 0 8px 20px rgba(226, 74, 41, 0.2);
         }
         .menu-item.active svg {
-            stroke: var(--accent-red);
+            stroke: var(--white);
         }
 
         .logout-btn {
             margin-top: auto;
             color: var(--accent-red);
+            font-weight: 600;
         }
         .logout-btn svg {
             stroke: var(--accent-red);
         }
         .logout-btn:hover {
-            background-color: var(--accent-red);
-            color: var(--white);
-            transform: translateY(-3px);
-        }
-        .logout-btn:hover svg { stroke: var(--white); }
-
-        /* Estado vacío mejorado */
-        .empty-state {
-            grid-column: 1 / -1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background: var(--white);
-            border-radius: 30px;
-            border: 2px dashed #EAE8DF;
-            padding: 80px 20px;
-            text-align: center;
+            background-color: rgba(226, 74, 41, 0.1);
+            transform: translateX(5px);
         }
     </style>
 </head>
 <body>
 
-    <!-- CONTENIDO PRINCIPAL -->
     <main class="main-content">
 
         <div class="header-section">
             <div class="title-container">
-                <img src="{% static 'logo1.png' %}" alt="Logo" class="header-logo" onerror="this.style.display='none'">
+                <img src="{% static 'logo.jpg' %}" alt="Logo" class="header-logo" onerror="this.style.display='none'">
                 <h1>Hoy tengo ganas de comer...</h1>
             </div>
 
             <form class="search-bar" method="GET" action="{% url 'inicio_cliente' %}">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent-red)" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                 <input type="text" name="q" placeholder="Buscar chilaquiles, postres, negocios..." value="{{ query }}">
                 <button type="submit" style="display: none;"></button>
             </form>
         </div>
 
-        <!-- Filtros Rápidos convertidos en enlaces dinámicos -->
         <div class="quick-filters">
             <a href="{% url 'inicio_cliente' %}" class="filter-pill {% if not query %}active{% endif %}">🔥 Todos</a>
             <a href="{% url 'inicio_cliente' %}?q=tacos" class="filter-pill {% if query|lower == 'tacos' %}active{% endif %}">🌮 Tacos & Antojitos</a>
@@ -447,23 +408,22 @@
             <a href="{% url 'inicio_cliente' %}?q=saludable" class="filter-pill {% if query|lower == 'saludable' %}active{% endif %}">🥗 Saludable</a>
         </div>
 
-        <!-- Contenedor de Negocios -->
         <div class="negocios-grid">
 
             {% for negocio in negocios %}
                 <div class="negocio-card">
-                    <!-- Portada Fotográfica -->
+                    <!-- Portada de la tarjeta -->
                     <div class="card-cover"></div>
 
                     <div class="card-body">
-                        <div class="card-header">
-                            <div class="negocio-logo">🏪</div>
-                            {% if negocio.abierto %}
-                                <span class="status-badge">Abierto ahora</span>
-                            {% else %}
-                                <span class="status-badge" style="background: #FFEBEE; color: #C62828;">Cerrado</span>
-                            {% endif %}
-                        </div>
+                        <!-- El icono flota entre la portada y el cuerpo -->
+                        <div class="negocio-logo-float">🏪</div>
+
+                        {% if negocio.abierto %}
+                            <span class="status-badge">Abierto ahora</span>
+                        {% else %}
+                            <span class="status-badge" style="background: #FFEBEE; color: #C62828;">Cerrado</span>
+                        {% endif %}
 
                         <div class="negocio-info">
                             <h3>{{ negocio.nombre }}</h3>
@@ -475,26 +435,22 @@
                                 <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
                                 Nuevo
                             </div>
-                            <!-- Botón con micro-interacción -->
                             <button class="btn-ver">
-                                Ver Menú
-                                <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                Ver Menú <span>→</span>
                             </button>
                         </div>
                     </div>
                 </div>
             {% empty %}
-                <div class="empty-state">
-                    <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#EAE8DF" stroke-width="2" style="margin-bottom: 20px;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
-                    <h3 style="color: var(--text-dark); margin: 0 0 10px 0; font-size: 20px;">Aún está tranquilo por aquí</h3>
-                    <p style="font-size: 14px; margin: 0; color: var(--text-muted); max-width: 300px;">No hay negocios registrados en este momento. ¡Sé el primero en vender en el campus!</p>
+                <div style="grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; background: var(--white); border-radius: 25px; border: 2px dashed #EAEAEA; padding: 80px 20px; text-align: center;">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ddd" stroke-width="2" style="margin-bottom: 15px;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+                    <p style="font-size: 15px; margin: 0; color: var(--text-muted);">Aún no hay negocios registrados.<br>¡Sé el primero en vender!</p>
                 </div>
             {% endfor %}
 
         </div>
     </main>
 
-    <!-- MENÚ LATERAL DERECHO -->
     <nav class="right-sidebar">
         <div class="user-greeting">
             <p>Hola de nuevo,</p>
@@ -506,7 +462,7 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
                 Inicio
             </a>
-            <a href="#" class="menu-item">
+            <a href="{% url 'perfil' %}" class="menu-item">
                 <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                 Mi Perfil
             </a>

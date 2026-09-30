@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from .models import Negocio
 from django.contrib.auth.models import User
+from django.contrib.auth import update_session_auth_hash
 from django.db.models import Q
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
@@ -133,3 +134,46 @@ def agregar_producto(request):
         form = ProductoForm()  # Mostramos el formulario vacío
 
     return render(request, 'agregar_producto.html', {'form': form})
+
+
+# --- VISTA DE PERFIL Y SEGURIDAD ---
+def perfil_view(request):
+    if request.method == 'POST':
+        # Identificamos qué formulario se envió usando un campo oculto 'action'
+        action = request.POST.get('action')
+
+        if action == 'perfil':
+            # Actualizamos los datos personales
+            request.user.first_name = request.POST.get('nombre')
+            request.user.last_name = request.POST.get('apellidos')
+            nuevo_correo = request.POST.get('correo')
+
+            # Validamos que el correo no esté usado por otro usuario
+            if User.objects.filter(username=nuevo_correo).exclude(id=request.user.id).exists():
+                messages.error(request, 'Ese correo ya está en uso por otra cuenta.')
+            else:
+                request.user.email = nuevo_correo
+                request.user.username = nuevo_correo  # En nuestro sistema, el username es el correo
+                request.user.save()
+                messages.success(request, '¡Tus datos personales han sido actualizados!')
+
+        elif action == 'seguridad':
+            # Lógica para cambiar contraseña
+            actual = request.POST.get('contra_actual')
+            nueva1 = request.POST.get('contra_nueva1')
+            nueva2 = request.POST.get('contra_nueva2')
+
+            if not request.user.check_password(actual):
+                messages.error(request, 'La contraseña actual es incorrecta.')
+            elif nueva1 != nueva2:
+                messages.error(request, 'Las contraseñas nuevas no coinciden.')
+            else:
+                request.user.set_password(nueva1)
+                request.user.save()
+                # Esta línea evita que se cierre la sesión tras cambiar la clave
+                update_session_auth_hash(request, request.user)
+                messages.success(request, '¡Tu contraseña ha sido cambiada con éxito!')
+
+        return redirect('perfil')
+
+    return render(request, 'perfil_cliente.html')
