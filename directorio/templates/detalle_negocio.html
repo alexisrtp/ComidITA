@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ negocio.nombre }} | ComidITA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #FFFFFF;
+            --brand-light: #FFF3EB;
+            --white: #FFFFFF;
+            --text-dark: #1E2A38;
+            --text-muted: #8C98A4;
+            --accent-red: #E24A29;
+            --success: #10B981;
+            --sidebar-width: 280px;
+        }
+
+        body, html {
+            margin: 0; padding: 0; background-color: var(--bg-main);
+            font-family: 'Poppins', sans-serif; color: var(--text-dark);
+            min-height: 100vh; overflow-x: hidden;
+            /* SOLUCIÓN: Quitamos display:flex del body para evitar que el contenido se aplaste */
+        }
+
+        /* --- CONTENEDOR PRINCIPAL --- */
+        .main-content {
+            margin-right: var(--sidebar-width); /* Respeta el espacio de la barra derecha */
+            padding: 0;
+            box-sizing: border-box;
+            min-height: 100vh;
+            display: block; /* Se asegura de ocupar todo el ancho disponible */
+        }
+
+        /* Banner del Negocio */
+        .store-banner {
+            width: 100%; /* Ocupa el 100% de .main-content */
+            height: 250px; background-color: #EAEAEA; position: relative;
+            background-image: url('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80');
+            background-size: cover; background-position: center;
+        }
+        .store-banner::after {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%);
+        }
+
+        /* Botón de regreso flotante */
+        .btn-back {
+            position: absolute; top: 30px; left: 40px; z-index: 10;
+            background: rgba(255,255,255,0.9); width: 45px; height: 45px; border-radius: 15px;
+            display: flex; justify-content: center; align-items: center; color: var(--text-dark);
+            text-decoration: none; transition: transform 0.2s; box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .btn-back:hover { transform: translateX(-5px); }
+
+        .store-info-overlay {
+            position: absolute; bottom: 30px; left: 40px; right: 40px; z-index: 10;
+            display: flex; align-items: flex-end; gap: 20px;
+        }
+
+        .store-logo {
+            width: 100px; height: 100px; background: var(--white); border-radius: 20px;
+            display: flex; justify-content: center; align-items: center; font-size: 40px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2); border: 4px solid var(--white);
+        }
+
+        .store-text { color: var(--white); flex-grow: 1; }
+        .store-text h1 { margin: 0 0 5px 0; font-size: 32px; font-weight: 700; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+        .store-text p { margin: 0; opacity: 0.9; font-size: 15px; }
+
+        .status-badge {
+            padding: 8px 16px; border-radius: 20px; font-weight: 700; font-size: 12px; text-transform: uppercase;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .status-open { background: var(--success); color: var(--white); }
+        .status-closed { background: #FFEBEE; color: #C62828; }
+
+        /* Contenedor del Menú */
+        .menu-container { padding: 50px 40px; }
+
+        /* Agrupador de Categorías */
+        .category-section { margin-bottom: 50px; }
+        .category-title { font-size: 22px; font-weight: 700; margin-bottom: 25px; color: var(--text-dark); border-bottom: 2px dashed #EAEAEA; padding-bottom: 10px; }
+
+        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; }
+
+        .product-card {
+            background: var(--white); border: 1px solid #F0F0F0; border-radius: 20px;
+            padding: 20px; display: flex; flex-direction: column; justify-content: space-between;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02); transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .product-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(226, 74, 41, 0.08); border-color: rgba(226, 74, 41, 0.2); }
+
+        .product-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
+        .product-header h3 { margin: 0; font-size: 17px; font-weight: 600; padding-right: 15px; }
+        .product-price { font-weight: 700; color: var(--success); font-size: 16px; margin: 0; }
+
+        .btn-add {
+            background: var(--brand-light); color: var(--accent-red); border: none;
+            padding: 12px; border-radius: 12px; font-weight: 600; font-size: 13px;
+            cursor: pointer; transition: all 0.2s; display: flex; justify-content: center; align-items: center; gap: 8px; width: 100%;
+        }
+        .btn-add:hover { background: var(--accent-red); color: var(--white); }
+
+        /* --- MENÚ LATERAL DERECHO --- */
+        .right-sidebar {
+            position: fixed; top: 0; right: 0; width: var(--sidebar-width); height: 100vh;
+            background: var(--brand-light); box-shadow: -5px 0 30px rgba(0, 0, 0, 0.04);
+            padding: 40px 25px; display: flex; flex-direction: column; box-sizing: border-box;
+            border-left: 1px solid rgba(226, 74, 41, 0.05); z-index: 100;
+        }
+        .user-greeting { text-align: center; margin-bottom: 40px; padding-bottom: 25px; border-bottom: 2px solid rgba(30, 42, 56, 0.08); }
+        .user-greeting p { margin: 0; font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; }
+        .user-greeting h2 { margin: 8px 0 0 0; font-size: 18px; color: var(--text-dark); overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+
+        .menu-links { display: flex; flex-direction: column; gap: 12px; flex-grow: 1; }
+        .menu-item { display: flex; align-items: center; gap: 15px; padding: 14px 18px; border-radius: 16px; color: var(--text-dark); text-decoration: none; font-weight: 500; font-size: 14px; transition: all 0.2s; }
+        .menu-item svg { width: 20px; height: 20px; stroke: var(--text-dark); transition: stroke 0.2s; }
+        .menu-item:hover { background-color: var(--white); color: var(--accent-red); transform: translateX(5px); }
+        .menu-item:hover svg { stroke: var(--accent-red); }
+        .logout-btn { margin-top: auto; color: var(--accent-red); font-weight: 600; }
+        .logout-btn svg { stroke: var(--accent-red); }
+        .logout-btn:hover { background-color: rgba(226, 74, 41, 0.1); transform: translateX(5px); }
+
+        /* Centrado del mensaje vacío */
+        .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); }
+        .empty-state svg { width: 48px; height: 48px; stroke: #ddd; margin-bottom: 15px; }
+        .empty-state p { font-size: 16px; margin: 0; line-height: 1.5; }
+    </style>
+</head>
+<body>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="main-content">
+
+        <!-- Hero Banner del Negocio -->
+        <div class="store-banner">
+            <a href="{% url 'inicio_cliente' %}" class="btn-back">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            </a>
+
+            <div class="store-info-overlay">
+                <div class="store-logo">🏪</div>
+                <div class="store-text">
+                    <h1>{{ negocio.nombre }}</h1>
+                    <p>{{ negocio.descripcion|default:"Lo mejor en comida para estudiantes." }}</p>
+                </div>
+                <div>
+                    {% if negocio.abierto %}
+                        <div class="status-badge status-open">Abierto Ahora</div>
+                    {% else %}
+                        <div class="status-badge status-closed">Cerrado</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Catálogo de Productos -->
+        <div class="menu-container">
+
+            {% if productos %}
+                {% regroup productos by categoria as menu_por_categorias %}
+
+                {% for categoria in menu_por_categorias %}
+                    <div class="category-section">
+                        <h2 class="category-title">{{ categoria.grouper }}</h2>
+
+                        <div class="products-grid">
+                            {% for producto in categoria.list %}
+                                <div class="product-card">
+                                    <div class="product-header">
+                                        <h3>{{ producto.nombre }}</h3>
+                                        <p class="product-price">${{ producto.precio }}</p>
+                                    </div>
+                                    <button class="btn-add">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                        Añadir al Ticket
+                                    </button>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endfor %}
+
+            {% else %}
+                <!-- Estado vacío -->
+                <div class="empty-state">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                    <p>Este negocio aún no ha publicado su menú.<br>¡Vuelve más tarde!</p>
+                </div>
+            {% endif %}
+
+        </div>
+    </main>
+
+    <!-- MENÚ LATERAL DERECHO (Consistencia de App) -->
+    <nav class="right-sidebar">
+        <div class="user-greeting">
+            <p>Hola de nuevo,</p>
+            <h2>{{ request.user.first_name|default:request.user.username }}</h2>
+        </div>
+        <div class="menu-links">
+            <a href="{% url 'inicio_cliente' %}" class="menu-item"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>Inicio</a>
+            <a href="{% url 'perfil' %}" class="menu-item"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>Mi Perfil</a>
+            <a href="#" class="menu-item"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>Mis Pedidos</a>
+            <a href="{% url 'logout' %}" class="menu-item logout-btn"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>Cerrar Sesión</a>
+        </div>
+    </nav>
+
+</body>
+</html>

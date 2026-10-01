@@ -32,6 +32,23 @@ class Producto(models.Model):
     precio = models.DecimalField(max_digits=8, decimal_places=2)
     disponible = models.BooleanField(default=True)
 
+    OPCIONES_CATEGORIA = [
+        ('Tacos & Antojitos', 'Tacos & Antojitos'),
+        ('Comida Rápida', 'Comida Rápida'),
+        ('Postres dulces', 'Postres dulces'),
+        ('Bebidas frías', 'Bebidas frías'),
+        ('Bebidas Calientes', 'Bebidas Calientes'),
+        ('Saludable', 'Saludable'),
+        ('Otro', 'Otro'),
+    ]
+
+    categoria = models.CharField(
+        max_length=50,
+        choices=OPCIONES_CATEGORIA,
+        default='Otro',
+        verbose_name='Categoría del Platillo'
+    )
+
     def __str__(self):
         return f"{self.nombre} - {self.negocio.nombre}"
 
@@ -74,3 +91,10 @@ class DetallePedido(models.Model):
 
     def subtotal(self):
         return self.cantidad * self.precio_unitario
+
+class Perfil(models.Model):
+    usuario = models.OneToOneField(User, on_delete=models.CASCADE)
+    telefono = models.CharField(max_length=15, blank=True, null=True)
+
+    def __str__(self):
+        return f"Perfil de {self.usuario.username}"

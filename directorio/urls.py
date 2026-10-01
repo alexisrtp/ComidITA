@@ -9,5 +9,6 @@ urlpatterns = [
     path('panel-emprendedor/', views.panel_emprendedor, name='panel_emprendedor'),
     path('panel-emprendedor/agregar/', views.agregar_producto, name='agregar_producto'),
     path('perfil/', views.perfil_view, name='perfil'),
-
+    path('toggle-estado/', views.toggle_estado_negocio, name='toggle_estado'),
+    path('negocio/<int:id>/', views.detalle_negocio, name='detalle_negocio'),
 ]

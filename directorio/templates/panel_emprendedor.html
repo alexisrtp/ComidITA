@@ -1,27 +1,239 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Mi Panel - ComidITA</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Panel | ComidITA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { background-color: #FDF8F5; font-family: sans-serif; color: #333; padding: 20px; }
-        .tarjeta { background-color: #FFFFFF; border-radius: 10px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; }
-        .btn { background-color: #E65100; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
+        :root {
+            --bg-admin: #F8F9FA; /* Un gris super claro, distinto al del cliente */
+            --brand-light: #FFF3EB;
+            --white: #FFFFFF;
+            --text-dark: #1E2A38;
+            --text-muted: #8C98A4;
+            --accent-red: #E24A29;
+            --success: #10B981;
+            --sidebar-width: 260px;
+        }
+
+        body, html {
+            margin: 0; padding: 0; background-color: var(--bg-admin);
+            font-family: 'Poppins', sans-serif; color: var(--text-dark);
+            min-height: 100vh; display: flex;
+        }
+
+        /* --- MENÚ LATERAL IZQUIERDO (Modo Trabajo) --- */
+        .left-sidebar {
+            position: fixed; top: 0; left: 0; width: var(--sidebar-width); height: 100vh;
+            background: var(--white); box-shadow: 5px 0 30px rgba(0, 0, 0, 0.03);
+            padding: 40px 20px; display: flex; flex-direction: column; box-sizing: border-box;
+            z-index: 100; border-right: 1px solid #EAEAEA;
+        }
+
+        .brand-section { text-align: center; margin-bottom: 40px; }
+        .brand-section h2 { margin: 0; font-size: 22px; color: var(--accent-red); font-weight: 700; }
+        .brand-section p { margin: 0; font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+
+        .menu-links { display: flex; flex-direction: column; gap: 8px; flex-grow: 1; }
+        .menu-item {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 14px 18px; border-radius: 12px; color: var(--text-muted);
+            text-decoration: none; font-weight: 500; font-size: 14px; transition: all 0.2s;
+        }
+        .menu-item-content { display: flex; align-items: center; gap: 12px; }
+        .menu-item svg { width: 20px; height: 20px; stroke: currentColor; }
+
+        .menu-item:hover { background-color: var(--brand-light); color: var(--accent-red); }
+        .menu-item.active { background-color: var(--accent-red); color: var(--white); box-shadow: 0 4px 15px rgba(226, 74, 41, 0.2); }
+
+        .badge { background-color: var(--accent-red); color: var(--white); font-size: 11px; padding: 2px 8px; border-radius: 20px; font-weight: 700; }
+        .menu-item.active .badge { background-color: var(--white); color: var(--accent-red); }
+
+        /* --- CONTENIDO PRINCIPAL --- */
+        .main-content {
+            flex-grow: 1; margin-left: var(--sidebar-width);
+            padding: 40px 5%; box-sizing: border-box;
+        }
+
+        /* Cabecera del Panel */
+        .dashboard-header {
+            display: flex; justify-content: space-between; align-items: center;
+            background: var(--white); padding: 25px 35px; border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.02); margin-bottom: 40px;
+        }
+
+        .header-info h1 { margin: 0 0 5px 0; font-size: 24px; }
+        .header-info p { margin: 0; color: var(--text-muted); font-size: 14px; }
+
+        /* Toggle Switch (Interruptor Abierto/Cerrado) */
+        .status-toggle { display: flex; align-items: center; gap: 15px; font-weight: 600; }
+        .switch { position: relative; display: inline-block; width: 60px; height: 34px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #ccc; transition: .4s; border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute; content: ""; height: 26px; width: 26px; left: 4px; bottom: 4px;
+            background-color: white; transition: .4s; border-radius: 50%;
+        }
+        input:checked + .slider { background-color: var(--success); }
+        input:checked + .slider:before { transform: translateX(26px); }
+
+        /* Sección de Productos */
+        .section-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .section-title h2 { margin: 0; font-size: 20px; }
+
+        .btn-add {
+            background-color: var(--brand-light); color: var(--accent-red); text-decoration: none;
+            padding: 10px 20px; border-radius: 12px; font-weight: 600; font-size: 14px;
+            display: flex; align-items: center; gap: 8px; transition: all 0.2s;
+        }
+        .btn-add:hover { background-color: var(--accent-red); color: var(--white); transform: translateY(-2px); }
+
+        /* Grid de Productos Mantenimiento */
+        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
+
+        .product-card {
+            background: var(--white); border-radius: 20px; padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02); border: 1px solid #F0F0F0;
+            display: flex; gap: 15px; transition: transform 0.2s;
+        }
+        .product-card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.05); }
+
+        .product-img { width: 80px; height: 80px; background-color: #EAEAEA; border-radius: 15px; object-fit: cover; }
+        .product-details { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; }
+        .product-details h3 { margin: 0 0 5px 0; font-size: 16px; color: var(--text-dark); }
+        .product-price { font-weight: 700; color: var(--success); font-size: 15px; margin: 0; }
+
+        .product-actions { display: flex; gap: 10px; margin-top: 10px; }
+        .action-icon {
+            width: 30px; height: 30px; border-radius: 8px; background: #F4F4F4;
+            display: flex; justify-content: center; align-items: center; cursor: pointer;
+            color: var(--text-muted); transition: all 0.2s;
+        }
+        .action-icon:hover { background: var(--brand-light); color: var(--accent-red); }
     </style>
 </head>
 <body>
-    <h1>Bienvenido a tu panel, {{ negocio.nombre }}</h1>
 
-    <div class="tarjeta">
-        <h2>Tus Productos</h2>
-        <a href="{% url 'agregar_producto' %}" class="btn" style="text-decoration:none; display:inline-block; margin-bottom:15px; text-align:center;">+ Agregar Producto</a>
-        <ul>
+    <!-- MENÚ LATERAL IZQUIERDO -->
+    <nav class="left-sidebar">
+        <div class="brand-section">
+            <h2>ComidITA</h2>
+            <p>Panel de Vendedor</p>
+        </div>
+
+        <div class="menu-links">
+            <a href="#" class="menu-item active">
+                <div class="menu-item-content">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                    Mi Menú
+                </div>
+            </a>
+            <a href="#" class="menu-item">
+                <div class="menu-item-content">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    Pedidos
+                </div>
+                <!-- Notificación automática usando la variable de tu vista -->
+                {% if pedidos %}
+                    <span class="badge">{{ pedidos|length }}</span>
+                {% endif %}
+            </a>
+            <a href="{% url 'logout' %}" class="menu-item" style="margin-top: auto; color: var(--accent-red);">
+                <div class="menu-item-content">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                    Cerrar Sesión
+                </div>
+            </a>
+        </div>
+    </nav>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="main-content">
+
+        <!-- Cabecera y Status -->
+        <div class="dashboard-header">
+            <div class="header-info">
+                <h1>{{ negocio.nombre }}</h1>
+                <p>Gestiona tus platillos y mantén tu inventario al día.</p>
+            </div>
+
+            <div class="status-toggle">
+                <!-- Usamos if para escribir "Abierto" o "Cerrado" según la base de datos -->
+                <span id="status-text">{% if negocio.abierto %}Abierto{% else %}Cerrado{% endif %}</span>
+                <label class="switch">
+                    <!-- Le ponemos un ID y verificamos el estado -->
+                    <input type="checkbox" id="toggle-switch" {% if negocio.abierto %}checked{% endif %}>
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Sección de Platillos -->
+        <div class="section-title">
+            <h2>Platillos Publicados</h2>
+            <a href="{% url 'agregar_producto' %}" class="btn-add">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                Agregar Platillo
+            </a>
+        </div>
+
+        <div class="products-grid">
             {% for producto in productos %}
-                <li>{{ producto.nombre }} - ${{ producto.precio }}</li>
+                <div class="product-card">
+                    <div class="product-img"></div>
+                    <div class="product-details">
+                        <h3>{{ producto.nombre }}</h3>
+                        <p class="product-price">${{ producto.precio }}</p>
+                        <div class="product-actions">
+                            <div class="action-icon" title="Editar"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></div>
+                            <div class="action-icon" title="Eliminar"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></div>
+                        </div>
+                    </div>
+                </div>
             {% empty %}
-                <p>Aún no tienes productos en tu menú.</p>
+                <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; background: white; border-radius: 20px; color: var(--text-muted);">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ddd" stroke-width="2" style="margin-bottom: 15px;"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                    <p>Aún no has agregado productos a tu menú.</p>
+                </div>
             {% endfor %}
-        </ul>
-    </div>
+        </div>
+
+    </main>
+<!-- SCRIPT PARA EL INTERRUPTOR -->
+    <script>
+        document.getElementById('toggle-switch').addEventListener('change', function() {
+            const isChecked = this.checked;
+            const statusText = document.getElementById('status-text');
+
+            // 1. Efecto HCI inmediato: Cambiamos el texto visualmente al instante
+            statusText.textContent = isChecked ? 'Abierto' : 'Cerrado';
+            statusText.style.color = isChecked ? 'var(--text-dark)' : 'var(--text-muted)';
+
+            // 2. Enviamos la petición oculta a Django
+            fetch('{% url "toggle_estado" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}' // La llave de seguridad de Django
+                },
+                body: JSON.stringify({ abierto: isChecked })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.status !== 'ok') {
+                    // Si falla el servidor, revertimos el botón para no mentirle al usuario
+                    alert('Hubo un error de conexión. Intenta de nuevo.');
+                    this.checked = !isChecked;
+                    statusText.textContent = !isChecked ? 'Abierto' : 'Cerrado';
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
 </body>
 </html>
