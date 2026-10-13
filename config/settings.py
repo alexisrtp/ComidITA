@@ -78,7 +78,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'comidita_db',
         'USER': 'root',
-        'PASSWORD': 'LacosfEr56',
+        'PASSWORD': '12345',
         'HOST': 'localhost',
         'PORT': '3306',
     }

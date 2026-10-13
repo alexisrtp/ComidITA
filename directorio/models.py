@@ -52,7 +52,6 @@ class Producto(models.Model):
     def __str__(self):
         return f"{self.nombre} - {self.negocio.nombre}"
 
-
 # 4. El Ticket Digital (Cabecera del Pedido)
 class Pedido(models.Model):
     ESTADOS = [
@@ -61,12 +60,20 @@ class Pedido(models.Model):
         ('CANCELADO', 'Cancelado'),
     ]
 
+    PUNTOS_ENTREGA = [
+        ('SISTEMAS', 'Edificio de Sistemas'),
+        ('ISOPTICA', 'Sala Isóptica'),
+        ('CAFETERIA', 'Cafetería Principal'),
+        ('BIBLIOTECA', 'Biblioteca'),
+        ('PLAZA', 'Plaza Cívica'),
+    ]
+
     comprador = models.ForeignKey(User, on_delete=models.CASCADE, related_name='pedidos_realizados')
     negocio = models.ForeignKey(Negocio, on_delete=models.CASCADE, related_name='pedidos_recibidos')
 
     # Datos operativos de la entrega
     folio = models.CharField(max_length=8, unique=True, editable=False)
-    punto_encuentro = models.CharField(max_length=150, help_text="Ej: Edificio de Sistemas, Cafetería, etc.")
+    punto_encuentro = models.CharField(max_length=50, choices=PUNTOS_ENTREGA, default='CAFETERIA', help_text="Punto seleccionado en el mapa")
     horario_entrega = models.TimeField(help_text="Hora exacta acordada para la entrega")
 
     estado = models.CharField(max_length=15, choices=ESTADOS, default='PENDIENTE')
