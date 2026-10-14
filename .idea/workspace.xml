@@ -5,11 +5,25 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="416b087d-d32f-4d96-a102-a7782a31186b" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/ComidITA.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/ComidITA.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/directorio/migrations/0005_producto_imagen_producto_unidades_disponibles.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/directorio/migrations/0006_negocio_hora_apertura_negocio_hora_cierre_and_more.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/directorio/templates/editar_negocio.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/directorio/templates/editar_producto.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/media/negocios/logos/WhatsApp_Image_2026-10-14_at_6.50.49_AM.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/media/negocios/portadas/WhatsApp_Image_2026-10-14_at_4.26.30_AM.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/media/productos/WhatsApp_Image_2026-10-14_at_4.26.30_AM.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/media/productos/WhatsApp_Image_2026-10-14_at_4.31.46_AM.jpeg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/productos/WhatsApp_Image_2026-10-14_at_4.31.46_AM.jpeg" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/config/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/config/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/config/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/directorio/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/directorio/forms.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/directorio/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/directorio/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/directorio/templates/agregar_producto.html" beforeDir="false" afterPath="$PROJECT_DIR$/directorio/templates/agregar_producto.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/directorio/templates/detalle_negocio.html" beforeDir="false" afterPath="$PROJECT_DIR$/directorio/templates/detalle_negocio.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/directorio/templates/panel_emprendedor.html" beforeDir="false" afterPath="$PROJECT_DIR$/directorio/templates/panel_emprendedor.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/directorio/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/directorio/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/directorio/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/directorio/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -27,23 +41,23 @@
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="1.0" />
-      <entry key="MS500" value="1.0" />
-      <entry key="S2" value="1.0" />
-      <entry key="S5" value="1.0" />
-      <entry key="S10" value="1.0000000000000075" />
-      <entry key="S30" value="1.0000342963460211" />
-      <entry key="S60" value="1.0110259991306045" />
-      <entry key="M2" value="1.2068967330959515" />
-      <entry key="M5" value="2.219049261164161" />
-      <entry key="M10" value="3.2069493624945338" />
-      <entry key="M15" value="3.690461434569584" />
-      <entry key="M30" value="4.280318947044587" />
-      <entry key="H1" value="4.622273365397085" />
-      <entry key="H2" value="4.80645913905362" />
-      <entry key="H4" value="4.911979406755471" />
-      <entry key="D1" value="6.757187672933794" />
-      <entry key="W1" value="9.309561926488993" />
+      <entry key="MS100" value="1.3145482710702705" />
+      <entry key="MS500" value="2.117230004017358" />
+      <entry key="S2" value="3.9664725186268366" />
+      <entry key="S5" value="5.0105238632242575" />
+      <entry key="S10" value="5.4696696649138214" />
+      <entry key="S30" value="5.814627513232036" />
+      <entry key="S60" value="5.909406558090545" />
+      <entry key="M2" value="6.050963703881639" />
+      <entry key="M5" value="6.804479912344145" />
+      <entry key="M10" value="8.014342952958021" />
+      <entry key="M15" value="9.005707631965562" />
+      <entry key="M30" value="11.261241424342593" />
+      <entry key="H1" value="14.334516556662248" />
+      <entry key="H2" value="17.63878658347324" />
+      <entry key="H4" value="20.278742569757704" />
+      <entry key="D1" value="24.930576405191236" />
+      <entry key="W1" value="28.16178747823586" />
     </decayedCancelled>
     <decayedSelected>
       <entry key="MS100" value="0.0" />
@@ -65,23 +79,23 @@
       <entry key="W1" value="0.0" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="0.7737824967711949" />
-      <entry key="MS500" value="0.950000382874886" />
-      <entry key="S2" value="0.9872586443741826" />
-      <entry key="S5" value="0.9948838432045924" />
-      <entry key="S10" value="0.9974386413231681" />
-      <entry key="S30" value="0.9991797669275503" />
-      <entry key="S60" value="1.0105955129259925" />
-      <entry key="M2" value="1.2066479128086591" />
-      <entry key="M5" value="2.2188724509148283" />
-      <entry key="M10" value="3.2068213168617987" />
-      <entry key="M15" value="3.690362893487308" />
-      <entry key="M30" value="4.2802615590826765" />
-      <entry key="H1" value="4.622242301434353" />
-      <entry key="H2" value="4.806442966366934" />
-      <entry key="H4" value="4.911971106812497" />
-      <entry key="D1" value="6.75718487837677" />
-      <entry key="W1" value="9.309561241681996" />
+      <entry key="MS100" value="1.278442790610974" />
+      <entry key="MS500" value="2.075093922133511" />
+      <entry key="S2" value="3.930751375977625" />
+      <entry key="S5" value="4.991528175192473" />
+      <entry key="S10" value="5.459192872132666" />
+      <entry key="S30" value="5.810895839859954" />
+      <entry key="S60" value="5.9075072049587325" />
+      <entry key="M2" value="6.0499742683769755" />
+      <entry key="M5" value="6.803926540952401" />
+      <entry key="M10" value="8.01377383623949" />
+      <entry key="M15" value="9.005120235669272" />
+      <entry key="M30" value="11.260717372694454" />
+      <entry key="H1" value="14.334116948133229" />
+      <entry key="H2" value="17.63851938465996" />
+      <entry key="H4" value="20.27858339577647" />
+      <entry key="D1" value="24.93054387369788" />
+      <entry key="W1" value="28.16178240216964" />
     </decayedShown>
   </component>
   <component name="ProjectColorInfo">{
@@ -103,14 +117,24 @@
     "RunOnceActivity.git.unshallow": "true",
     "RunOnceActivity.typescript.service.memoryLimit.init": "true",
     "codeWithMe.voiceChat.enabledByDefault": "false",
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
     "git-widget-placeholder": "main",
-    "last_opened_file_path": "C:/Users/Angel/Downloads/ComidITA/ComidITA",
+    "junie.onboarding.icon.badge.shown": "true",
+    "last_opened_file_path": "C:/Users/angel/PycharmProjects/ComidITA/directorio/templates",
+    "node.js.detected.package.eslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
     "python.packages.toolwindow.project.migrated.to.right.top.v2": "true",
-    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable",
+    "to.speed.mode.migration.done": "true"
   }
 }]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\angel\PycharmProjects\ComidITA\directorio\templates" />
+    </key>
+  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -130,6 +154,7 @@
       <workItem from="1790612643300" duration="615000" />
       <workItem from="1790645267470" duration="3102000" />
       <workItem from="1790695685758" duration="3330000" />
+      <workItem from="1791967366462" duration="12514000" />
     </task>
     <servers />
   </component>

@@ -10,7 +10,10 @@ urlpatterns = [
     path('registro/', views.registro_view, name='registro'),
     path('panel-emprendedor/', views.panel_emprendedor, name='panel_emprendedor'),
     path('panel-emprendedor/agregar/', views.agregar_producto, name='agregar_producto'),
+    path('panel-emprendedor/eliminar/<int:id>/', views.eliminar_producto, name='eliminar_producto'),
     path('perfil/', views.perfil_view, name='perfil'),
     path('toggle-estado/', views.toggle_estado_negocio, name='toggle_estado'),
     path('negocio/<int:id>/', views.detalle_negocio, name='detalle_negocio'),
+    path('panel-emprendedor/editar/<int:id>/', views.editar_producto, name='editar_producto'),
+    path('panel-emprendedor/editar-perfil/', views.editar_perfil_negocio, name='editar_perfil_negocio'),
 ]

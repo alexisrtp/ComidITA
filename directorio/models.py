@@ -10,27 +10,59 @@ class Categoria(models.Model):
     def __str__(self):
         return self.nombre
 
-
 # 2. Perfil del Negocio
 class Negocio(models.Model):
     propietario = models.OneToOneField(User, on_delete=models.CASCADE)
     nombre = models.CharField(max_length=100)
     descripcion = models.TextField(help_text="Descripción general del negocio o su menú")
-    abierto = models.BooleanField(default=True, help_text="Apágalo si estás en clase o no puedes entregar hoy")
+    abierto = models.BooleanField(default=True, help_text="Interruptor manual (apágalo si estás en clase)")
+
+    # --- CAMPOS NUEVOS (Logos y Horarios) ---
+    logo = models.ImageField(upload_to='negocios/logos/', null=True, blank=True)
+    portada = models.ImageField(upload_to='negocios/portadas/', null=True, blank=True)
+    hora_apertura = models.TimeField(null=True, blank=True, help_text="Ej: 08:00")
+    hora_cierre = models.TimeField(null=True, blank=True, help_text="Ej: 16:00")
+
+    # ----------------------------------------
 
     def __str__(self):
         return self.nombre
+
+    @property
+    def esta_abierto_ahora(self):
+        from django.utils import timezone
+
+        # 1. Si apagaste el switch manual del panel, se queda cerrado sin importar la hora.
+        if not self.abierto:
+            return False
+
+        # 2. Si aún no has configurado horarios, dependemos solo de tu switch manual.
+        if not self.hora_apertura or not self.hora_cierre:
+            return self.abierto
+
+        # 3. Si hay horarios definidos, comparamos con la hora actual de México.
+        hora_actual = timezone.localtime(timezone.now()).time()
+        return self.hora_apertura <= hora_actual <= self.hora_cierre
 
 
 # 3. Catálogo de Productos
 class Producto(models.Model):
     negocio = models.ForeignKey(Negocio, on_delete=models.CASCADE, related_name='productos')
-    categoria = models.ForeignKey(Categoria, on_delete=models.SET_NULL, null=True, related_name='productos')
+
     nombre = models.CharField(max_length=100)
     descripcion = models.CharField(max_length=200,
                                    help_text="Breve descripción del producto (ej. 'Con queso extra y aderezo')")
     precio = models.DecimalField(max_digits=8, decimal_places=2)
     disponible = models.BooleanField(default=True)
+
+    # --- AQUÍ ESTÁN LOS CAMPOS NUEVOS ---
+    imagen = models.ImageField(upload_to='productos/', null=True, blank=True)
+    unidades_disponibles = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        help_text="Deja en blanco si es ilimitado, o pon el número de unidades"
+    )
+    # ------------------------------------
 
     OPCIONES_CATEGORIA = [
         ('Tacos & Antojitos', 'Tacos & Antojitos'),

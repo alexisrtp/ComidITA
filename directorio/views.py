@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 import json
 from .models import Negocio, Producto, Pedido, Perfil
-from .forms import ProductoForm
+from .forms import ProductoForm, NegocioForm
 
 def login_vista(request):
     if request.method == 'POST':
@@ -121,7 +121,7 @@ def agregar_producto(request):
     negocio = Negocio.objects.filter(propietario=request.user).first()
 
     if request.method == 'POST':
-        form = ProductoForm(request.POST)
+        form = ProductoForm(request.POST, request.FILES)
         if form.is_valid():
             # Pausamos el guardado un segundo para inyectarle de quién es el producto
             producto = form.save(commit=False)
@@ -213,3 +213,42 @@ def detalle_negocio(request, id):
         'negocio': negocio,
         'productos': productos
     })
+
+def eliminar_producto(request, id):
+    # Buscamos el producto por su ID, asegurando que pertenezca al usuario actual
+    Producto.objects.filter(id=id, negocio__propietario=request.user).delete()
+    return redirect('panel_emprendedor')
+
+
+def editar_producto(request, id):
+    # Buscamos el platillo asegurándonos de que pertenezca a este emprendedor
+    producto = Producto.objects.filter(id=id, negocio__propietario=request.user).first()
+
+    if request.method == 'POST':
+        # Le pasamos los datos nuevos, la nueva foto (si hay), y el producto original
+        form = ProductoForm(request.POST, request.FILES, instance=producto)
+        if form.is_valid():
+            form.save()
+            return redirect('panel_emprendedor')
+    else:
+        # Si entra por primera vez, el formulario se precarga con los datos del producto
+        form = ProductoForm(instance=producto)
+
+    return render(request, 'editar_producto.html', {'form': form})
+
+
+def editar_perfil_negocio(request):
+    # Buscamos el negocio del emprendedor que inició sesión
+    negocio = Negocio.objects.filter(propietario=request.user).first()
+
+    if request.method == 'POST':
+        # Le pasamos los datos y archivos (request.FILES) para guardar fotos y horarios
+        form = NegocioForm(request.POST, request.FILES, instance=negocio)
+        if form.is_valid():
+            form.save()
+            return redirect('panel_emprendedor')
+    else:
+        # Precargamos los datos que ya tiene el negocio (si es que ya los llenó antes)
+        form = NegocioForm(instance=negocio)
+
+    return render(request, 'editar_negocio.html', {'form': form, 'negocio': negocio})

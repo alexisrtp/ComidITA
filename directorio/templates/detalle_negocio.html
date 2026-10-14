@@ -22,23 +22,21 @@
             margin: 0; padding: 0; background-color: var(--bg-main);
             font-family: 'Poppins', sans-serif; color: var(--text-dark);
             min-height: 100vh; overflow-x: hidden;
-            /* SOLUCIÓN: Quitamos display:flex del body para evitar que el contenido se aplaste */
         }
 
         /* --- CONTENEDOR PRINCIPAL --- */
         .main-content {
-            margin-right: var(--sidebar-width); /* Respeta el espacio de la barra derecha */
+            margin-right: var(--sidebar-width);
             padding: 0;
             box-sizing: border-box;
             min-height: 100vh;
-            display: block; /* Se asegura de ocupar todo el ancho disponible */
+            display: block;
         }
 
         /* Banner del Negocio */
         .store-banner {
-            width: 100%; /* Ocupa el 100% de .main-content */
+            width: 100%;
             height: 250px; background-color: #EAEAEA; position: relative;
-            background-image: url('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80');
             background-size: cover; background-position: center;
         }
         .store-banner::after {
@@ -135,20 +133,32 @@
     <!-- CONTENIDO PRINCIPAL -->
     <main class="main-content">
 
-        <!-- Hero Banner del Negocio -->
-        <div class="store-banner">
+        <!-- Hero Banner del Negocio (Dinámico) -->
+        <div class="store-banner"
+             style="background-image: url('{% if negocio.portada %}{{ negocio.portada.url }}{% else %}https://images.unsplash.com/photo-1555396273-367ea4eb4db5?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80{% endif %}');">
+
             <a href="{% url 'inicio_cliente' %}" class="btn-back">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
             </a>
 
             <div class="store-info-overlay">
-                <div class="store-logo">🏪</div>
+                <!-- Logo dinámico -->
+                <div class="store-logo" style="overflow: hidden; padding: {% if negocio.logo %}0{% else %}20px{% endif %};">
+                    {% if negocio.logo %}
+                        <img src="{{ negocio.logo.url }}" alt="{{ negocio.nombre }}" style="width: 100%; height: 100%; object-fit: cover;">
+                    {% else %}
+                        🏪
+                    {% endif %}
+                </div>
+
                 <div class="store-text">
                     <h1>{{ negocio.nombre }}</h1>
                     <p>{{ negocio.descripcion|default:"Lo mejor en comida para estudiantes." }}</p>
                 </div>
+
+                <!-- Horario dinámico inteligente -->
                 <div>
-                    {% if negocio.abierto %}
+                    {% if negocio.esta_abierto_ahora %}
                         <div class="status-badge status-open">Abierto Ahora</div>
                     {% else %}
                         <div class="status-badge status-closed">Cerrado</div>
@@ -164,24 +174,52 @@
                 {% regroup productos by categoria as menu_por_categorias %}
 
                 {% for categoria in menu_por_categorias %}
-                    <div class="category-section">
-                        <h2 class="category-title">{{ categoria.grouper }}</h2>
+                <div class="category-section">
+                    <h2 class="category-title">{{ categoria.grouper }}</h2>
 
-                        <div class="products-grid">
-                            {% for producto in categoria.list %}
-                                <div class="product-card">
-                                    <div class="product-header">
-                                        <h3>{{ producto.nombre }}</h3>
-                                        <p class="product-price">${{ producto.precio }}</p>
+                    <div class="products-grid">
+                        {% for producto in categoria.list %}
+                            <div class="product-card" style="display: flex; flex-direction: column; justify-content: space-between;">
+
+                                <!-- Bloque superior: Foto + Textos -->
+                                <div style="display: flex; gap: 15px; margin-bottom: 15px;">
+
+                                    <!-- Contenedor de la foto -->
+                                    <div style="width: 70px; height: 70px; flex-shrink: 0; border-radius: 12px; overflow: hidden; background-color: #F4F4F4;">
+                                        {% if producto.imagen %}
+                                            <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                        {% endif %}
                                     </div>
-                                    <button class="btn-add">
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                                        Añadir al Ticket
-                                    </button>
+
+                                    <!-- Información del producto -->
+                                    <div style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center;">
+                                        <div class="product-header" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 5px;">
+                                            <h3 style="margin: 0; font-size: 16px;">{{ producto.nombre }}</h3>
+                                            <p class="product-price" style="margin: 0; font-weight: 700;">${{ producto.precio }}</p>
+                                        </div>
+
+                                        <!-- Disponibilidad (Stock) -->
+                                        {% if producto.unidades_disponibles %}
+                                            <p style="margin: 0; font-size: 12px; color: #E24A29; font-weight: 600;">
+                                                Quedan {{ producto.unidades_disponibles }} unidades
+                                            </p>
+                                        {% else %}
+                                            <p style="margin: 0; font-size: 12px; color: #10B981; font-weight: 600;">
+                                                Stock ilimitado
+                                            </p>
+                                        {% endif %}
+                                    </div>
                                 </div>
-                            {% endfor %}
-                        </div>
+
+                                <!-- Botón de comprar -->
+                                <button class="btn-add" style="width: 100%; justify-content: center;">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                    Añadir al Ticket
+                                </button>
+                            </div>
+                        {% endfor %}
                     </div>
+                </div>
                 {% endfor %}
 
             {% else %}
