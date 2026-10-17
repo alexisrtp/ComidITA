@@ -78,7 +78,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'comidita_db',
         'USER': 'root',
-        'PASSWORD': '12345',
+        'PASSWORD': 'LacosfEr56',
         'HOST': 'localhost',
         'PORT': '3306',
     }
@@ -142,3 +142,5 @@ LOGIN_REDIRECT_URL = 'panel_emprendedor'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

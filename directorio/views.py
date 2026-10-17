@@ -6,8 +6,10 @@ from django.contrib.auth import update_session_auth_hash
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
+from django.db import transaction
+from django.urls import reverse
 import json
-from .models import Negocio, Producto, Pedido, Perfil
+from .models import Negocio, Producto, Pedido, Perfil, DetallePedido
 from .forms import ProductoForm, NegocioForm
 
 def login_vista(request):
@@ -114,6 +116,59 @@ def panel_emprendedor(request):
     }
     return render(request, 'panel_emprendedor.html', context)
 
+
+@login_required
+def panel_pedidos_emprendedor(request):
+    # Verificamos que el usuario tenga un negocio asociado
+    negocio = Negocio.objects.filter(propietario=request.user).first()
+    if not negocio:
+        return redirect('inicio_cliente')
+
+    # Obtenemos los pedidos pendientes y los que ya van en camino al punto ITA
+    pedidos_pendientes = Pedido.objects.filter(
+        negocio=negocio,
+        estado__in=['PENDIENTE', 'EN_CAMINO']
+    ).prefetch_related('items__producto').order_by('-fecha_creacion')
+
+    # El historial solo contendrá los pedidos ya completados o cancelados
+    pedidos_historial = Pedido.objects.filter(
+        negocio=negocio,
+        estado__in=['COMPLETADO', 'CANCELADO']
+    ).prefetch_related('items__producto').order_by('-fecha_creacion')
+
+    # Calculamos totales para cada pedido
+    for p in pedidos_pendientes:
+        p.total_calculado = sum(item.subtotal() for item in p.items.all())
+    for p in pedidos_historial:
+        p.total_calculado = sum(item.subtotal() for item in p.items.all())
+
+    return render(request, 'panel_pedidos.html', {
+        'negocio': negocio,
+        'pedidos_pendientes': pedidos_pendientes,
+        'pedidos_historial': pedidos_historial,
+    })
+
+
+@login_required
+def actualizar_estado_pedido(request, pedido_id):
+    if request.method == 'POST':
+        negocio = Negocio.objects.filter(propietario=request.user).first()
+        pedido = get_object_or_404(Pedido, id=pedido_id, negocio=negocio)
+
+        try:
+            data = json.loads(request.body)
+            nuevo_estado = data.get('estado')  # 'COMPLETADO' o 'CANCELADO'
+
+            if nuevo_estado in ['EN_CAMINO', 'COMPLETADO', 'CANCELADO']:
+                pedido.estado = nuevo_estado
+                pedido.save()
+                return JsonResponse({'status': 'ok'})
+
+            return JsonResponse({'status': 'error', 'message': 'Estado no válido'}, status=400)
+        except Exception:
+            return JsonResponse({'status': 'error', 'message': 'Error al actualizar'}, status=400)
+
+    return JsonResponse({'status': 'error'}, status=405)
 
 @login_required
 def agregar_producto(request):
@@ -252,3 +307,112 @@ def editar_perfil_negocio(request):
         form = NegocioForm(instance=negocio)
 
     return render(request, 'editar_negocio.html', {'form': form, 'negocio': negocio})
+
+
+@login_required
+def mis_pedidos_view(request):
+    # --- IMPRESIÓN DE DEPURACIÓN EN TERMINAL ---
+    print(f"DEBUG USUARIO ACTUAL: {request.user} (ID: {request.user.id})")
+
+    todos_los_pedidos = Pedido.objects.filter(comprador=request.user)
+    print(f"DEBUG TOTAL PEDIDOS DE ESTE USUARIO EN BD: {todos_los_pedidos.count()}")
+    for p in todos_los_pedidos:
+        print(f" -> Pedido ID: {p.id} | Folio: {p.folio} | Estado en BD: '{p.estado}'")
+    # -------------------------------------------
+
+    pedidos_en_curso = Pedido.objects.filter(
+        comprador=request.user,
+        estado__in=['PENDIENTE', 'EN_CAMINO']
+    ).select_related('negocio').prefetch_related('items__producto').order_by('-fecha_creacion')
+
+    for pedido in pedidos_en_curso:
+        pedido.total_calculado = sum(item.subtotal() for item in pedido.items.all())
+
+    historial_pedidos = Pedido.objects.filter(
+        comprador=request.user,
+        estado__in=['COMPLETADO', 'CANCELADO']
+    ).select_related('negocio').prefetch_related('items__producto').order_by('-fecha_creacion')
+
+    for pedido in historial_pedidos:
+        pedido.total_calculado = sum(item.subtotal() for item in pedido.items.all())
+
+    return render(request, 'mis_pedidos.html', {
+        'pedidos_en_curso': pedidos_en_curso,
+        'historial_pedidos': historial_pedidos,
+    })
+
+
+def detalle_negocio(request, id):
+    negocio = get_object_or_404(Negocio, id=id)
+    # Solo mostramos platillos marcados como disponibles
+    productos = Producto.objects.filter(negocio=negocio, disponible=True)
+
+    return render(request, 'detalle_negocio.html', {
+        'negocio': negocio,
+        'productos': productos,
+        'puntos_entrega': Pedido.PUNTOS_ENTREGA,
+    })
+
+
+@login_required
+def crear_pedido(request, id):
+    if request.method == 'POST':
+        negocio = get_object_or_404(Negocio, id=id)
+
+        # Validamos que el negocio esté abierto
+        if not negocio.esta_abierto_ahora:
+            return JsonResponse({'status': 'error', 'message': 'El negocio acaba de cerrar.'}, status=400)
+
+        try:
+            data = json.loads(request.body)
+            punto_encuentro = data.get('punto_encuentro')
+            horario_entrega = data.get('horario_entrega')
+            items = data.get('items', [])
+
+            if not items or not punto_encuentro or not horario_entrega:
+                return JsonResponse({'status': 'error', 'message': 'Completa el punto y hora de entrega.'}, status=400)
+
+            # Guardamos todo en una transacción segura
+            with transaction.atomic():
+                nuevo_pedido = Pedido.objects.create(
+                    comprador=request.user,
+                    negocio=negocio,
+                    punto_encuentro=punto_encuentro,
+                    horario_entrega=horario_entrega,
+                    estado='PENDIENTE'
+                )
+
+                for item in items:
+                    producto = get_object_or_404(Producto, id=item['id'], negocio=negocio)
+                    cantidad = int(item['cantidad'])
+
+                    # Si el producto tiene límite de unidades, verificamos y descontamos
+                    if producto.unidades_disponibles is not None:
+                        if cantidad > producto.unidades_disponibles:
+                            raise ValueError(
+                                f"Solo quedan {producto.unidades_disponibles} unidades de {producto.nombre}.")
+                        producto.unidades_disponibles -= cantidad
+                        if producto.unidades_disponibles == 0:
+                            producto.disponible = False
+                        producto.save()
+
+                    DetallePedido.objects.create(
+                        pedido=nuevo_pedido,
+                        producto=producto,
+                        cantidad=cantidad,
+                        precio_unitario=producto.precio
+                    )
+
+            return JsonResponse({
+                'status': 'ok',
+                'folio': nuevo_pedido.folio,
+                'redirect_url': reverse('mis_pedidos')
+            })
+
+        except ValueError as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+        except Exception:
+            return JsonResponse({'status': 'error', 'message': 'No se pudo procesar tu pedido.'}, status=400)
+
+    return JsonResponse({'status': 'error'}, status=405)
+

@@ -27,80 +27,229 @@
         /* --- CONTENEDOR PRINCIPAL --- */
         .main-content {
             margin-right: var(--sidebar-width);
-            padding: 0;
+            padding: 0 0 120px 0; /* Espacio inferior para la barra flotante */
             box-sizing: border-box;
             min-height: 100vh;
             display: block;
         }
 
-        /* Banner del Negocio */
+        /* --- BANNER SUPERIOR EXTENDIDO --- */
         .store-banner {
             width: 100%;
-            height: 250px; background-color: #EAEAEA; position: relative;
-            background-size: cover; background-position: center;
+            height: 240px;
+            background-color: #1E2A38;
+            position: relative;
+            background-image: url('{% if negocio.portada %}{{ negocio.portada.url }}{% else %}https://images.unsplash.com/photo-1555396273-367ea4eb4db5?ixlib=rb-1.2.1&auto=format&fit=crop&w=1400&q=80{% endif %}');
+            background-size: cover;
+            background-position: center;
         }
         .store-banner::after {
-            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%);
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(to top, rgba(20, 28, 38, 0.85) 0%, rgba(20, 28, 38, 0.15) 100%);
         }
 
-        /* Botón de regreso flotante */
         .btn-back {
-            position: absolute; top: 30px; left: 40px; z-index: 10;
-            background: rgba(255,255,255,0.9); width: 45px; height: 45px; border-radius: 15px;
+            position: absolute; top: 25px; left: 40px; z-index: 10;
+            background: rgba(255,255,255,0.95); width: 42px; height: 42px; border-radius: 14px;
             display: flex; justify-content: center; align-items: center; color: var(--text-dark);
-            text-decoration: none; transition: transform 0.2s; box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-decoration: none; transition: transform 0.2s; box-shadow: 0 4px 15px rgba(0,0,0,0.12);
         }
-        .btn-back:hover { transform: translateX(-5px); }
+        .btn-back:hover { transform: translateX(-4px); }
 
         .store-info-overlay {
-            position: absolute; bottom: 30px; left: 40px; right: 40px; z-index: 10;
+            position: absolute; bottom: 25px; left: 40px; right: 40px; z-index: 10;
             display: flex; align-items: flex-end; gap: 20px;
         }
 
         .store-logo {
-            width: 100px; height: 100px; background: var(--white); border-radius: 20px;
-            display: flex; justify-content: center; align-items: center; font-size: 40px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2); border: 4px solid var(--white);
+            width: 88px; height: 88px; background: var(--white); border-radius: 22px;
+            display: flex; justify-content: center; align-items: center; font-size: 38px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2); border: 3px solid var(--white);
+            overflow: hidden; flex-shrink: 0;
         }
+        .store-logo img { width: 100%; height: 100%; object-fit: cover; }
 
         .store-text { color: var(--white); flex-grow: 1; }
-        .store-text h1 { margin: 0 0 5px 0; font-size: 32px; font-weight: 700; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
-        .store-text p { margin: 0; opacity: 0.9; font-size: 15px; }
+        .store-text h1 { margin: 0 0 4px 0; font-size: 30px; font-weight: 700; }
+        .store-text p { margin: 0; opacity: 0.9; font-size: 14px; max-width: 600px; }
 
         .status-badge {
-            padding: 8px 16px; border-radius: 20px; font-weight: 700; font-size: 12px; text-transform: uppercase;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            padding: 8px 16px; border-radius: 20px; font-weight: 700; font-size: 12px;
+            text-transform: uppercase; letter-spacing: 0.5px;
         }
         .status-open { background: var(--success); color: var(--white); }
         .status-closed { background: #FFEBEE; color: #C62828; }
 
-        /* Contenedor del Menú */
-        .menu-container { padding: 50px 40px; }
+        /* --- CATÁLOGO DE PLATILLOS --- */
+        .menu-container { padding: 40px; }
+        .category-section { margin-bottom: 45px; }
+        .category-title {
+            font-size: 20px; font-weight: 700; margin: 0 0 20px 0;
+            color: var(--text-dark); padding-bottom: 10px; border-bottom: 2px solid #F4F4F4;
+        }
 
-        /* Agrupador de Categorías */
-        .category-section { margin-bottom: 50px; }
-        .category-title { font-size: 22px; font-weight: 700; margin-bottom: 25px; color: var(--text-dark); border-bottom: 2px dashed #EAEAEA; padding-bottom: 10px; }
-
-        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; }
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+            gap: 22px;
+        }
 
         .product-card {
             background: var(--white); border: 1px solid #F0F0F0; border-radius: 20px;
-            padding: 20px; display: flex; flex-direction: column; justify-content: space-between;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.02); transition: transform 0.2s, box-shadow 0.2s;
+            padding: 18px; display: flex; gap: 16px; align-items: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02); transition: all 0.2s ease;
         }
-        .product-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(226, 74, 41, 0.08); border-color: rgba(226, 74, 41, 0.2); }
+        .product-card:hover {
+            border-color: rgba(226, 74, 41, 0.3);
+            box-shadow: 0 10px 25px rgba(226, 74, 41, 0.06);
+        }
+        .product-card.in-cart {
+            border-color: var(--accent-red);
+            background: #FFFCFA;
+        }
 
-        .product-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
-        .product-header h3 { margin: 0; font-size: 17px; font-weight: 600; padding-right: 15px; }
-        .product-price { font-weight: 700; color: var(--success); font-size: 16px; margin: 0; }
+        .product-thumb {
+            width: 85px; height: 85px; border-radius: 16px; background: var(--brand-light);
+            display: flex; justify-content: center; align-items: center; font-size: 30px;
+            flex-shrink: 0; overflow: hidden;
+        }
+        .product-thumb img { width: 100%; height: 100%; object-fit: cover; }
 
-        .btn-add {
+        .product-info { flex-grow: 1; min-width: 0; }
+        .product-info h3 {
+            margin: 0 0 4px 0; font-size: 16px; font-weight: 600;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .product-desc {
+            margin: 0 0 10px 0; font-size: 12px; color: var(--text-muted);
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+        }
+
+        .product-bottom {
+            display: flex; justify-content: space-between; align-items: center; gap: 10px;
+        }
+        .product-price { font-weight: 700; color: var(--text-dark); font-size: 16px; margin: 0; }
+
+        /* Botón Añadir y Contador Directo */
+        .btn-add-initial {
             background: var(--brand-light); color: var(--accent-red); border: none;
-            padding: 12px; border-radius: 12px; font-weight: 600; font-size: 13px;
-            cursor: pointer; transition: all 0.2s; display: flex; justify-content: center; align-items: center; gap: 8px; width: 100%;
+            padding: 8px 16px; border-radius: 12px; font-weight: 600; font-size: 13px;
+            cursor: pointer; transition: all 0.2s; font-family: 'Poppins', sans-serif;
         }
-        .btn-add:hover { background: var(--accent-red); color: var(--white); }
+        .btn-add-initial:hover { background: var(--accent-red); color: var(--white); }
+
+        .qty-stepper {
+            display: none; align-items: center; gap: 10px;
+            background: var(--white); border: 1.5px solid var(--accent-red);
+            border-radius: 12px; padding: 4px 8px;
+        }
+        .qty-btn {
+            background: none; border: none; color: var(--accent-red);
+            font-size: 16px; font-weight: 700; width: 24px; height: 24px;
+            cursor: pointer; border-radius: 6px; display: flex; justify-content: center; align-items: center;
+        }
+        .qty-btn:hover { background: var(--brand-light); }
+        .qty-val { font-size: 13px; font-weight: 700; min-width: 16px; text-align: center; }
+
+        /* --- BARRA FLOTANTE DEL CARRITO (PROGRESIVE DISCLOSURE) --- */
+        .floating-cart-bar {
+            position: fixed; bottom: 28px;
+            left: calc((100% - var(--sidebar-width)) / 2);
+            transform: translate(-50%, 150%);
+            background: var(--text-dark); color: var(--white);
+            width: 90%; max-width: 560px; padding: 14px 22px;
+            border-radius: 22px; display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 15px 40px rgba(30, 42, 56, 0.25);
+            z-index: 90; transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-sizing: border-box;
+        }
+        .floating-cart-bar.visible {
+            transform: translate(-50%, 0);
+        }
+
+        .cart-bar-left { display: flex; align-items: center; gap: 14px; }
+        .cart-count-badge {
+            background: var(--accent-red); color: var(--white);
+            width: 36px; height: 36px; border-radius: 12px;
+            display: flex; justify-content: center; align-items: center;
+            font-weight: 700; font-size: 15px;
+        }
+        .cart-bar-text span { display: block; font-size: 11px; color: #B0BAC5; }
+        .cart-bar-text strong { font-size: 16px; font-weight: 700; }
+
+        .btn-open-checkout {
+            background: var(--accent-red); color: var(--white); border: none;
+            padding: 12px 22px; border-radius: 14px; font-weight: 600; font-size: 13px;
+            cursor: pointer; font-family: 'Poppins', sans-serif; transition: transform 0.2s;
+        }
+        .btn-open-checkout:hover { transform: scale(1.03); }
+
+        /* --- MODAL LIMPIO DE CONFIRMACIÓN --- */
+        .modal-backdrop {
+            position: fixed; inset: 0; background: rgba(30, 42, 56, 0.55);
+            backdrop-filter: blur(4px); z-index: 200;
+            display: none; justify-content: center; align-items: center; padding: 20px;
+        }
+        .modal-backdrop.open { display: flex; }
+
+        .checkout-modal {
+            background: var(--white); width: 100%; max-width: 460px;
+            border-radius: 26px; padding: 30px; box-sizing: border-box;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.18);
+            animation: modalUp 0.25s ease-out;
+        }
+        @keyframes modalUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .modal-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #F0F0F0;
+        }
+        .modal-header h2 { margin: 0; font-size: 20px; font-weight: 700; }
+        .btn-close-modal {
+            background: #F4F4F4; border: none; width: 34px; height: 34px;
+            border-radius: 10px; cursor: pointer; font-size: 16px; color: var(--text-dark);
+        }
+
+        .summary-list {
+            max-height: 170px; overflow-y: auto; margin-bottom: 18px;
+            padding-right: 5px;
+        }
+        .summary-row {
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 13px; padding: 8px 0; border-bottom: 1px dashed #EFEFEF;
+        }
+        .summary-total {
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 16px; font-weight: 700; padding: 12px 0;
+            border-top: 2px solid #F4F4F4; margin-bottom: 18px;
+        }
+
+        .field-group { margin-bottom: 16px; }
+        .field-group label {
+            display: block; font-size: 12px; font-weight: 600;
+            color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px;
+        }
+        .field-group select, .field-group input {
+            width: 100%; padding: 13px 16px; border-radius: 14px;
+            border: 1px solid #E2E8F0; background: #FAFAFA;
+            font-family: 'Poppins', sans-serif; font-size: 14px; color: var(--text-dark);
+            box-sizing: border-box; outline: none;
+        }
+        .field-group select:focus, .field-group input:focus {
+            border-color: var(--accent-red); background: var(--white);
+        }
+
+        .btn-confirm-order {
+            width: 100%; background: var(--accent-red); color: var(--white);
+            border: none; padding: 15px; border-radius: 16px;
+            font-family: 'Poppins', sans-serif; font-size: 15px; font-weight: 700;
+            cursor: pointer; transition: all 0.2s; margin-top: 8px;
+        }
+        .btn-confirm-order:hover { box-shadow: 0 10px 25px rgba(226, 74, 41, 0.3); }
+        .btn-confirm-order:disabled { background: #CBD5E1; cursor: not-allowed; box-shadow: none; }
 
         /* --- MENÚ LATERAL DERECHO --- */
         .right-sidebar {
@@ -111,52 +260,39 @@
         }
         .user-greeting { text-align: center; margin-bottom: 40px; padding-bottom: 25px; border-bottom: 2px solid rgba(30, 42, 56, 0.08); }
         .user-greeting p { margin: 0; font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; }
-        .user-greeting h2 { margin: 8px 0 0 0; font-size: 18px; color: var(--text-dark); overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
-
+        .user-greeting h2 { margin: 8px 0 0 0; font-size: 18px; color: var(--text-dark); }
         .menu-links { display: flex; flex-direction: column; gap: 12px; flex-grow: 1; }
         .menu-item { display: flex; align-items: center; gap: 15px; padding: 14px 18px; border-radius: 16px; color: var(--text-dark); text-decoration: none; font-weight: 500; font-size: 14px; transition: all 0.2s; }
-        .menu-item svg { width: 20px; height: 20px; stroke: var(--text-dark); transition: stroke 0.2s; }
+        .menu-item svg { width: 20px; height: 20px; stroke: var(--text-dark); }
         .menu-item:hover { background-color: var(--white); color: var(--accent-red); transform: translateX(5px); }
         .menu-item:hover svg { stroke: var(--accent-red); }
         .logout-btn { margin-top: auto; color: var(--accent-red); font-weight: 600; }
         .logout-btn svg { stroke: var(--accent-red); }
-        .logout-btn:hover { background-color: rgba(226, 74, 41, 0.1); transform: translateX(5px); }
 
-        /* Centrado del mensaje vacío */
         .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); }
-        .empty-state svg { width: 48px; height: 48px; stroke: #ddd; margin-bottom: 15px; }
-        .empty-state p { font-size: 16px; margin: 0; line-height: 1.5; }
     </style>
 </head>
 <body>
 
-    <!-- CONTENIDO PRINCIPAL -->
     <main class="main-content">
-
-        <!-- Hero Banner del Negocio (Dinámico) -->
-        <div class="store-banner"
-             style="background-image: url('{% if negocio.portada %}{{ negocio.portada.url }}{% else %}https://images.unsplash.com/photo-1555396273-367ea4eb4db5?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80{% endif %}');">
-
-            <a href="{% url 'inicio_cliente' %}" class="btn-back">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        <!-- Banner del Negocio -->
+        <div class="store-banner">
+            <a href="{% url 'inicio_cliente' %}" class="btn-back" title="Volver al inicio">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
             </a>
 
             <div class="store-info-overlay">
-                <!-- Logo dinámico -->
-                <div class="store-logo" style="overflow: hidden; padding: {% if negocio.logo %}0{% else %}20px{% endif %};">
+                <div class="store-logo">
                     {% if negocio.logo %}
-                        <img src="{{ negocio.logo.url }}" alt="{{ negocio.nombre }}" style="width: 100%; height: 100%; object-fit: cover;">
+                        <img src="{{ negocio.logo.url }}" alt="{{ negocio.nombre }}">
                     {% else %}
                         🏪
                     {% endif %}
                 </div>
-
                 <div class="store-text">
                     <h1>{{ negocio.nombre }}</h1>
-                    <p>{{ negocio.descripcion|default:"Lo mejor en comida para estudiantes." }}</p>
+                    <p>{{ negocio.descripcion }}</p>
                 </div>
-
-                <!-- Horario dinámico inteligente -->
                 <div>
                     {% if negocio.esta_abierto_ahora %}
                         <div class="status-badge status-open">Abierto Ahora</div>
@@ -167,73 +303,118 @@
             </div>
         </div>
 
-        <!-- Catálogo de Productos -->
+        <!-- Menú por Categorías -->
         <div class="menu-container">
-
             {% if productos %}
                 {% regroup productos by categoria as menu_por_categorias %}
 
                 {% for categoria in menu_por_categorias %}
-                <div class="category-section">
-                    <h2 class="category-title">{{ categoria.grouper }}</h2>
+                    <div class="category-section">
+                        <h2 class="category-title">{{ categoria.grouper }}</h2>
 
-                    <div class="products-grid">
-                        {% for producto in categoria.list %}
-                            <div class="product-card" style="display: flex; flex-direction: column; justify-content: space-between;">
-
-                                <!-- Bloque superior: Foto + Textos -->
-                                <div style="display: flex; gap: 15px; margin-bottom: 15px;">
-
-                                    <!-- Contenedor de la foto -->
-                                    <div style="width: 70px; height: 70px; flex-shrink: 0; border-radius: 12px; overflow: hidden; background-color: #F4F4F4;">
+                        <div class="products-grid">
+                            {% for producto in categoria.list %}
+                                <div class="product-card" id="card-{{ producto.id }}">
+                                    <div class="product-thumb">
                                         {% if producto.imagen %}
-                                            <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                            <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}">
+                                        {% else %}
+                                            🍽️
                                         {% endif %}
                                     </div>
 
-                                    <!-- Información del producto -->
-                                    <div style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center;">
-                                        <div class="product-header" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 5px;">
-                                            <h3 style="margin: 0; font-size: 16px;">{{ producto.nombre }}</h3>
-                                            <p class="product-price" style="margin: 0; font-weight: 700;">${{ producto.precio }}</p>
-                                        </div>
+                                    <div class="product-info">
+                                        <h3>{{ producto.nombre }}</h3>
+                                        <p class="product-desc">{{ producto.descripcion }}</p>
 
-                                        <!-- Disponibilidad (Stock) -->
-                                        {% if producto.unidades_disponibles %}
-                                            <p style="margin: 0; font-size: 12px; color: #E24A29; font-weight: 600;">
-                                                Quedan {{ producto.unidades_disponibles }} unidades
-                                            </p>
-                                        {% else %}
-                                            <p style="margin: 0; font-size: 12px; color: #10B981; font-weight: 600;">
-                                                Stock ilimitado
-                                            </p>
-                                        {% endif %}
+                                        <div class="product-bottom">
+                                            <p class="product-price">${{ producto.precio }}</p>
+
+                                            {% if negocio.esta_abierto_ahora %}
+                                                <!-- Botón Inicial -->
+                                                <button type="button" class="btn-add-initial" id="btn-init-{{ producto.id }}"
+                                                    onclick="modificarCarrito({{ producto.id }}, '{{ producto.nombre|escapejs }}', {{ producto.precio }}, 1, {{ producto.unidades_disponibles|default:99 }})">
+                                                    + Añadir
+                                                </button>
+
+                                                <!-- Selector [- 1 +] (Aparece al agregar) -->
+                                                <div class="qty-stepper" id="stepper-{{ producto.id }}">
+                                                    <button type="button" class="qty-btn"
+                                                        onclick="modificarCarrito({{ producto.id }}, '{{ producto.nombre|escapejs }}', {{ producto.precio }}, -1, {{ producto.unidades_disponibles|default:99 }})">−</button>
+                                                    <span class="qty-val" id="qty-{{ producto.id }}">1</span>
+                                                    <button type="button" class="qty-btn"
+                                                        onclick="modificarCarrito({{ producto.id }}, '{{ producto.nombre|escapejs }}', {{ producto.precio }}, 1, {{ producto.unidades_disponibles|default:99 }})">+</button>
+                                                </div>
+                                            {% else %}
+                                                <span style="font-size: 11px; color: var(--text-muted); font-weight: 600;">No disponible</span>
+                                            {% endif %}
+                                        </div>
                                     </div>
                                 </div>
-
-                                <!-- Botón de comprar -->
-                                <button class="btn-add" style="width: 100%; justify-content: center;">
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                                    Añadir al Ticket
-                                </button>
-                            </div>
-                        {% endfor %}
+                            {% endfor %}
+                        </div>
                     </div>
-                </div>
                 {% endfor %}
-
             {% else %}
-                <!-- Estado vacío -->
                 <div class="empty-state">
-                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
-                    <p>Este negocio aún no ha publicado su menú.<br>¡Vuelve más tarde!</p>
+                    <p>Este negocio aún no tiene platillos disponibles en su menú.</p>
                 </div>
             {% endif %}
-
         </div>
     </main>
 
-    <!-- MENÚ LATERAL DERECHO (Consistencia de App) -->
+    <!-- BARRA FLOTANTE INFERIOR (Solo visible cuando hay productos) -->
+    <div class="floating-cart-bar" id="floating-cart">
+        <div class="cart-bar-left">
+            <div class="cart-count-badge" id="cart-badge-count">0</div>
+            <div class="cart-bar-text">
+                <span>Total de tu orden</span>
+                <strong id="cart-bar-total">$0.00</strong>
+            </div>
+        </div>
+        <button type="button" class="btn-open-checkout" onclick="abrirModalCheckout()">
+            Ver mi Ticket →
+        </button>
+    </div>
+
+    <!-- MODAL DE CONFIRMACIÓN DE ENTREGA -->
+    <div class="modal-backdrop" id="checkout-modal">
+        <div class="checkout-modal">
+            <div class="modal-header">
+                <h2>Confirmar tu Ticket</h2>
+                <button type="button" class="btn-close-modal" onclick="cerrarModalCheckout()">✕</button>
+            </div>
+
+            <div class="summary-list" id="modal-items-list"></div>
+
+            <div class="summary-total">
+                <span>Total a pagar al recibir</span>
+                <span style="color: var(--accent-red);" id="modal-total-price">$0.00</span>
+            </div>
+
+            <div class="field-group">
+                <label>📍 Punto de encuentro en el ITA</label>
+                <select id="select-punto">
+                    {% for codigo, nombre_punto in puntos_entrega %}
+                        <option value="{{ codigo }}">{{ nombre_punto }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="field-group">
+                <label>⏰ Hora acordada para la entrega</label>
+                <input type="time" id="input-hora" required>
+            </div>
+
+            <p id="checkout-error" style="color: #C62828; font-size: 12px; margin: 0 0 10px 0; display: none;"></p>
+
+            <button type="button" class="btn-confirm-order" id="btn-submit-order" onclick="enviarPedido()">
+                Confirmar Pedido
+            </button>
+        </div>
+    </div>
+
+    <!-- MENÚ LATERAL DERECHO -->
     <nav class="right-sidebar">
         <div class="user-greeting">
             <p>Hola de nuevo,</p>
@@ -242,10 +423,135 @@
         <div class="menu-links">
             <a href="{% url 'inicio_cliente' %}" class="menu-item"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>Inicio</a>
             <a href="{% url 'perfil' %}" class="menu-item"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>Mi Perfil</a>
-            <a href="#" class="menu-item"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>Mis Pedidos</a>
+            <a href="{% url 'mis_pedidos' %}" class="menu-item"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>Mis Pedidos</a>
             <a href="{% url 'logout' %}" class="menu-item logout-btn"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>Cerrar Sesión</a>
         </div>
     </nav>
 
+    <script>
+        const carrito = {};
+
+        // Sugerir por defecto una hora 20 minutos en el futuro
+        window.addEventListener('DOMContentLoaded', () => {
+            const ahora = new Date(Date.now() + 20 * 60000);
+            const horas = String(ahora.getHours()).padStart(2, '0');
+            const minutos = String(ahora.getMinutes()).padStart(2, '0');
+            document.getElementById('input-hora').value = `${horas}:${minutos}`;
+        });
+
+        function modificarCarrito(id, nombre, precio, cambio, maxStock) {
+            if (!carrito[id]) {
+                carrito[id] = { id, nombre, precio: parseFloat(precio), cantidad: 0 };
+            }
+
+            const nuevaCantidad = carrito[id].cantidad + cambio;
+
+            if (nuevaCantidad > maxStock) {
+                alert(`Solo hay ${maxStock} unidades disponibles de ${nombre}.`);
+                return;
+            }
+
+            if (nuevaCantidad <= 0) {
+                delete carrito[id];
+                document.getElementById(`btn-init-${id}`).style.display = 'inline-block';
+                document.getElementById(`stepper-${id}`).style.display = 'none';
+                document.getElementById(`card-${id}`).classList.remove('in-cart');
+            } else {
+                carrito[id].cantidad = nuevaCantidad;
+                document.getElementById(`btn-init-${id}`).style.display = 'none';
+                document.getElementById(`stepper-${id}`).style.display = 'flex';
+                document.getElementById(`qty-${id}`).textContent = nuevaCantidad;
+                document.getElementById(`card-${id}`).classList.add('in-cart');
+            }
+
+            actualizarBarraFlotante();
+        }
+
+        function actualizarBarraFlotante() {
+            const items = Object.values(carrito);
+            const totalUnidades = items.reduce((acc, item) => acc + item.cantidad, 0);
+            const precioTotal = items.reduce((acc, item) => acc + (item.cantidad * item.precio), 0);
+
+            const barra = document.getElementById('floating-cart');
+            if (totalUnidades > 0) {
+                document.getElementById('cart-badge-count').textContent = totalUnidades;
+                document.getElementById('cart-bar-total').textContent = `$${precioTotal.toFixed(2)}`;
+                barra.classList.add('visible');
+            } else {
+                barra.classList.remove('visible');
+            }
+        }
+
+        function abrirModalCheckout() {
+            const lista = document.getElementById('modal-items-list');
+            lista.innerHTML = '';
+            let total = 0;
+
+            Object.values(carrito).forEach(item => {
+                const sub = item.cantidad * item.precio;
+                total += sub;
+                lista.innerHTML += `
+                    <div class="summary-row">
+                        <span><strong>${item.cantidad}x</strong> ${item.nombre}</span>
+                        <strong>$${sub.toFixed(2)}</strong>
+                    </div>
+                `;
+            });
+
+            document.getElementById('modal-total-price').textContent = `$${total.toFixed(2)}`;
+            document.getElementById('checkout-error').style.display = 'none';
+            document.getElementById('checkout-modal').classList.add('open');
+        }
+
+        function cerrarModalCheckout() {
+            document.getElementById('checkout-modal').classList.remove('open');
+        }
+
+        function enviarPedido() {
+            const punto = document.getElementById('select-punto').value;
+            const hora = document.getElementById('input-hora').value;
+            const errorBox = document.getElementById('checkout-error');
+            const btn = document.getElementById('btn-submit-order');
+
+            if (!hora) {
+                errorBox.textContent = 'Por favor selecciona la hora de entrega.';
+                errorBox.style.display = 'block';
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = 'Enviando tu pedido...';
+
+            fetch('{% url "crear_pedido" negocio.id %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({
+                    punto_encuentro: punto,
+                    horario_entrega: hora,
+                    items: Object.values(carrito)
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'ok') {
+                    window.location.href = data.redirect_url;
+                } else {
+                    errorBox.textContent = data.message || 'Ocurrió un error.';
+                    errorBox.style.display = 'block';
+                    btn.disabled = false;
+                    btn.textContent = 'Confirmar Pedido';
+                }
+            })
+            .catch(() => {
+                errorBox.textContent = 'Error de conexión con el servidor.';
+                errorBox.style.display = 'block';
+                btn.disabled = false;
+                btn.textContent = 'Confirmar Pedido';
+            });
+        }
+    </script>
 </body>
 </html>

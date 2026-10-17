@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Pedidos | ComidITA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #FFFFFF;
+            --sidebar-bg: #FFF3EB;
+            --brand-light: #FFF3EB;
+            --white: #FFFFFF;
+            --text-dark: #1E2A38;
+            --text-muted: #8C98A4;
+            --accent-red: #E24A29;
+            --success: #10B981;
+            --danger: #EF4444;
+            --sidebar-width: 280px;
+        }
+
+        body, html {
+            margin: 0; padding: 0; background-color: var(--bg-main);
+            font-family: 'Poppins', sans-serif; color: var(--text-dark);
+            min-height: 100vh; overflow-x: hidden;
+        }
+
+        /* --- CONTENEDOR PRINCIPAL --- */
+        .main-content {
+            margin-right: var(--sidebar-width);
+            padding: 50px 5%;
+            box-sizing: border-box;
+            min-height: 100vh;
+        }
+
+        .header-section {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 35px; flex-wrap: wrap; gap: 15px;
+        }
+        .header-section h1 { font-size: 28px; font-weight: 700; margin: 0 0 5px 0; }
+        .header-section p { color: var(--text-muted); margin: 0; font-size: 14px; }
+
+        .btn-demo {
+            background: var(--brand-light); color: var(--accent-red);
+            border: 1px dashed var(--accent-red); padding: 10px 18px;
+            border-radius: 12px; font-family: 'Poppins', sans-serif;
+            font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s;
+        }
+        .btn-demo:hover { background: var(--accent-red); color: var(--white); }
+
+        /* --- LAYOUT DIVIDIDO EN DOS MITADES (IZQUIERDA: EN CURSO | DERECHA: HISTORIAL) --- */
+        .orders-split-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 35px;
+            align-items: start;
+        }
+
+        @media (max-width: 1100px) {
+            .orders-split-layout { grid-template-columns: 1fr; }
+        }
+
+        .column-box {
+            background: #FAFAFA;
+            border-radius: 28px;
+            padding: 28px;
+            border: 1px solid #F0F0F0;
+        }
+
+        .column-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 22px; padding-bottom: 15px; border-bottom: 2px solid #EFEFEF;
+        }
+        .column-title {
+            display: flex; align-items: center; gap: 10px;
+            font-size: 18px; font-weight: 700; margin: 0;
+        }
+        .count-pill {
+            background: var(--white); border: 1px solid #EAEAEA;
+            padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        /* --- WIDGETS DESPLEGABLES --- */
+        .order-widget {
+            background: var(--white);
+            border-radius: 22px;
+            margin-bottom: 18px;
+            border: 1px solid #EFEFEF;
+            box-shadow: 0 6px 20px rgba(30, 42, 56, 0.04);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .order-widget:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(226, 74, 41, 0.1);
+            border-color: rgba(226, 74, 41, 0.25);
+        }
+
+        .order-widget.expanded {
+            border-color: var(--accent-red);
+            box-shadow: 0 15px 35px rgba(226, 74, 41, 0.14);
+        }
+
+        .widget-summary {
+            padding: 20px 22px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .widget-left { display: flex; align-items: center; gap: 15px; }
+        .store-icon-box {
+            width: 52px; height: 52px; border-radius: 15px;
+            background: var(--brand-light); display: flex;
+            justify-content: center; align-items: center; font-size: 24px;
+            flex-shrink: 0; overflow: hidden;
+        }
+        .store-icon-box img { width: 100%; height: 100%; object-fit: cover; }
+
+        .widget-title h3 { margin: 0 0 5px 0; font-size: 16px; font-weight: 700; }
+        .widget-meta { font-size: 12px; color: var(--text-muted); margin: 0; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+        .folio-tag {
+            font-family: monospace; background: #F1F5F9; color: var(--text-dark);
+            padding: 2px 7px; border-radius: 6px; font-weight: 700; font-size: 11px;
+        }
+
+        .widget-right { display: flex; align-items: center; gap: 14px; }
+        .price-tag { font-size: 16px; font-weight: 700; color: var(--text-dark); }
+
+        .chevron-icon {
+            width: 32px; height: 32px; border-radius: 10px; background: #F5F5F5;
+            display: flex; justify-content: center; align-items: center;
+            transition: transform 0.3s ease, background 0.2s;
+        }
+        .order-widget.expanded .chevron-icon {
+            transform: rotate(180deg);
+            background: var(--accent-red); color: var(--white);
+        }
+        .order-widget.expanded .chevron-icon svg { stroke: var(--white); }
+
+        /* Etiquetas de Estado */
+        .badge-status {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.4px;
+        }
+        .badge-active { background: #FFF3EB; color: var(--accent-red); }
+        .badge-completed { background: #E8F5E9; color: #2E7D32; }
+        .badge-cancelled { background: #FFEBEE; color: #C62828; }
+
+        .pulse-dot {
+            width: 8px; height: 8px; background-color: var(--accent-red);
+            border-radius: 50%; display: inline-block;
+            animation: pulse-ring 1.5s infinite;
+        }
+
+        @keyframes pulse-ring {
+            0% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(226, 74, 41, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(226, 74, 41, 0); }
+            100% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(226, 74, 41, 0); }
+        }
+
+        /* --- DESPLIEGUE INTERNO DEL WIDGET --- */
+        .widget-collapse {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            background: #FFFCFA;
+            border-top: 1px dashed transparent;
+        }
+
+        .order-widget.expanded .widget-collapse {
+            max-height: 700px;
+            border-top-color: #EAEAEA;
+        }
+
+        .widget-body { padding: 22px; }
+
+        /* --- ANIMACIÓN AMIGABLE DEL PROCESO --- */
+        .tracker-box {
+            background: var(--white);
+            border-radius: 18px;
+            padding: 20px;
+            margin-bottom: 18px;
+            border: 1px solid #F3E8E2;
+            text-align: center;
+        }
+
+        .animated-scene {
+            display: flex; flex-direction: column; align-items: center;
+            margin-bottom: 18px;
+        }
+
+        .floating-emoji {
+            font-size: 42px;
+            display: inline-block;
+            animation: cooking-bounce 2s ease-in-out infinite;
+            filter: drop-shadow(0 8px 12px rgba(226, 74, 41, 0.2));
+        }
+
+        @keyframes cooking-bounce {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(-7px) rotate(-6deg); }
+            75% { transform: translateY(-4px) rotate(6deg); }
+        }
+
+        .scene-status-text {
+            font-size: 13px; font-weight: 600; color: var(--accent-red); margin-top: 6px;
+        }
+
+        .progress-track {
+            position: relative; display: flex; justify-content: space-between;
+            margin-top: 15px; padding: 0 10px;
+        }
+        .progress-line-bg {
+            position: absolute; top: 16px; left: 15%; right: 15%; height: 5px;
+            background: #EAEAEA; border-radius: 10px; z-index: 1;
+        }
+        .progress-line-fill {
+            position: absolute; top: 16px; left: 15%; width: 45%; height: 5px;
+            background: linear-gradient(90deg, var(--accent-red), #FF8A65, var(--accent-red));
+            border-radius: 10px; z-index: 2;
+            background-size: 200% 100%;
+            animation: gradient-move 2s linear infinite;
+        }
+
+        @keyframes gradient-move {
+            0% { background-position: 100% 0; }
+            100% { background-position: -100% 0; }
+        }
+
+        .step-node {
+            position: relative; z-index: 3; display: flex;
+            flex-direction: column; align-items: center; gap: 6px; width: 30%;
+        }
+        .step-circle {
+            width: 34px; height: 34px; border-radius: 50%;
+            background: var(--white); border: 2px solid #DCDCDC;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 14px; font-weight: 700;
+        }
+        .step-node.completed .step-circle,
+        .step-node.current .step-circle {
+            border-color: var(--accent-red);
+            background: var(--accent-red); color: var(--white);
+            box-shadow: 0 4px 12px rgba(226, 74, 41, 0.3);
+        }
+        .step-node.current .step-circle { transform: scale(1.15); }
+        .step-label { font-size: 11px; font-weight: 600; color: var(--text-muted); }
+        .step-node.completed .step-label,
+        .step-node.current .step-label { color: var(--text-dark); font-weight: 700; }
+
+        /* --- INFO DE ENTREGA Y DESGLOSE DE ITEMS --- */
+        .delivery-info-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+            margin-bottom: 15px;
+        }
+        .info-pill-box {
+            background: var(--white); border: 1px solid #EFEFEF;
+            border-radius: 12px; padding: 10px 14px; font-size: 12px;
+        }
+        .info-pill-box span { display: block; font-size: 10px; text-transform: uppercase; color: var(--text-muted); font-weight: 700; }
+        .info-pill-box strong { color: var(--text-dark); font-size: 13px; }
+
+        .ticket-breakdown {
+            background: var(--white); border-radius: 16px;
+            padding: 16px 20px; border: 1px solid #EFEFEF;
+        }
+        .ticket-title {
+            font-size: 11px; font-weight: 700; text-transform: uppercase;
+            color: var(--text-muted); letter-spacing: 0.8px; margin: 0 0 12px 0;
+        }
+        .ticket-item {
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 13px; padding: 8px 0; border-bottom: 1px dashed #F0F0F0;
+        }
+        .ticket-item:last-child { border-bottom: none; }
+        .item-qty {
+            background: var(--brand-light); color: var(--accent-red);
+            font-weight: 700; padding: 2px 8px; border-radius: 6px;
+            margin-right: 8px; font-size: 12px;
+        }
+        .ticket-footer {
+            margin-top: 12px; padding-top: 12px; border-top: 2px solid #F5F5F5;
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 14px;
+        }
+
+        .btn-reorder {
+            margin-top: 15px; width: 100%; background: var(--brand-light);
+            color: var(--accent-red); border: none; padding: 11px;
+            border-radius: 12px; font-weight: 600; font-size: 13px;
+            cursor: pointer; text-decoration: none; display: inline-block;
+            text-align: center; box-sizing: border-box; transition: all 0.2s;
+        }
+        .btn-reorder:hover { background: var(--accent-red); color: var(--white); }
+
+        .empty-box { text-align: center; padding: 45px 20px; color: var(--text-muted); }
+        .empty-box span { font-size: 38px; display: block; margin-bottom: 10px; }
+        .empty-box p { font-size: 13px; margin: 0; line-height: 1.6; }
+
+        /* --- BARRA LATERAL DERECHA --- */
+        .right-sidebar {
+            position: fixed; top: 0; right: 0; width: var(--sidebar-width); height: 100vh;
+            background: var(--sidebar-bg); box-shadow: -10px 0 40px rgba(0, 0, 0, 0.03);
+            padding: 40px 25px; display: flex; flex-direction: column; box-sizing: border-box;
+            z-index: 100; border-left: 1px solid rgba(226, 74, 41, 0.08);
+        }
+        .user-greeting { text-align: center; margin-bottom: 40px; padding-bottom: 25px; border-bottom: 2px solid rgba(226, 74, 41, 0.1); }
+        .user-greeting p { margin: 0; font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; }
+        .user-greeting h2 { margin: 8px 0 0 0; font-size: 18px; color: var(--text-dark); overflow: hidden; text-overflow: ellipsis; }
+        .menu-links { display: flex; flex-direction: column; gap: 12px; flex-grow: 1; }
+        .menu-item { display: flex; align-items: center; gap: 15px; padding: 14px 18px; border-radius: 16px; color: var(--text-dark); text-decoration: none; font-weight: 500; font-size: 14px; transition: all 0.2s; }
+        .menu-item svg { width: 20px; height: 20px; stroke: var(--text-dark); transition: stroke 0.2s; }
+        .menu-item:hover { background-color: var(--white); color: var(--accent-red); transform: translateX(5px); }
+        .menu-item:hover svg { stroke: var(--accent-red); }
+        .menu-item.active { background-color: var(--accent-red); color: var(--white); font-weight: 600; box-shadow: 0 8px 20px rgba(226, 74, 41, 0.2); }
+        .menu-item.active svg { stroke: var(--white); }
+        .logout-btn { margin-top: auto; color: var(--accent-red); font-weight: 600; }
+        .logout-btn svg { stroke: var(--accent-red); }
+    </style>
+</head>
+<body>
+
+    <main class="main-content">
+        <div class="header-section">
+            <div>
+                <h1>Mis Pedidos</h1>
+                <p>Haz clic en cualquier pedido para ver su estado en vivo y el desglose de tu ticket.</p>
+            </div>
+            <button type="button" class="btn-demo" onclick="activarModoDemo()">
+                ✨ Mostrar / Ocultar Vista Previa
+            </button>
+        </div>
+
+        <div class="orders-split-layout">
+
+            <!-- ==========================================
+                 MITAD IZQUIERDA: PEDIDOS EN CURSO (PENDIENTE)
+                 ========================================== -->
+            <section class="column-box">
+                <div class="column-header">
+                    <h2 class="column-title">🔥 Pedidos en Curso</h2>
+                    <span class="count-pill">{{ pedidos_en_curso|length }}</span>
+                </div>
+
+                {% for pedido in pedidos_en_curso %}
+                    <div class="order-widget {% if forloop.first %}expanded{% endif %}" onclick="toggleOrderWidget(this)">
+                        <div class="widget-summary">
+                            <div class="widget-left">
+                                <div class="store-icon-box">
+                                    {% if pedido.negocio.logo %}
+                                        <img src="{{ pedido.negocio.logo.url }}" alt="{{ pedido.negocio.nombre }}">
+                                    {% else %}
+                                        🛵
+                                    {% endif %}
+                                </div>
+                                <div class="widget-title">
+                                    <h3>{{ pedido.negocio.nombre }}</h3>
+                                    <p class="widget-meta">
+                                        <span class="folio-tag">#{{ pedido.folio }}</span>
+                                        <span class="badge-status badge-active">
+                                            <span class="pulse-dot"></span> {{ pedido.get_estado_display }}
+                                        </span>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="widget-right">
+                                <span class="price-tag">${{ pedido.total_calculado }}</span>
+                                <div class="chevron-icon">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="widget-collapse">
+                            <div class="widget-body">
+                                <!-- Animación Amigable del Proceso -->
+                                <div class="tracker-box">
+                                    <div class="animated-scene">
+                                        {% if pedido.estado == 'PENDIENTE' %}
+                                            <span class="floating-emoji">🍳</span>
+                                            <span class="scene-status-text">¡{{ pedido.negocio.nombre }} está preparando tu orden!</span>
+                                        {% elif pedido.estado == 'EN_CAMINO' %}
+                                            <span class="floating-emoji">🏃‍♂️</span>
+                                            <span class="scene-status-text">¡El vendedor ya llegó al punto de encuentro! Acércate por tu comida.</span>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="progress-track">
+                                        <div class="progress-line-bg"></div>
+                                        <div class="progress-line-fill" style="width: {% if pedido.estado == 'PENDIENTE' %}45%{% else %}100%{% endif %};"></div>
+
+                                        <div class="step-node completed">
+                                            <div class="step-circle">✓</div>
+                                            <span class="step-label">Ordenado</span>
+                                        </div>
+                                        <div class="step-node {% if pedido.estado == 'EN_CAMINO' %}completed{% else %}current{% endif %}">
+                                            <div class="step-circle">2</div>
+                                            <span class="step-label">En Proceso</span>
+                                        </div>
+                                        <div class="step-node {% if pedido.estado == 'EN_CAMINO' %}current{% endif %}">
+                                            <div class="step-circle">3</div>
+                                            <span class="step-label">En Punto Acordado dentro del ITA</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Datos de Entrega del Modelo -->
+                                <div class="delivery-info-grid">
+                                    <div class="info-pill-box">
+                                        <span>📍 Punto de Encuentro</span>
+                                        <strong>{{ pedido.get_punto_encuentro_display }}</strong>
+                                    </div>
+                                    <div class="info-pill-box">
+                                        <span>⏰ Hora Acordada</span>
+                                        <strong>{{ pedido.horario_entrega|time:"h:i A" }}</strong>
+                                    </div>
+                                </div>
+
+                                <!-- Desglose de Partidas (DetallePedido -> items) -->
+                                <div class="ticket-breakdown">
+                                    <p class="ticket-title">Desglose de tu ticket (Folio #{{ pedido.folio }})</p>
+                                    {% for item in pedido.items.all %}
+                                        <div class="ticket-item">
+                                            <span>
+                                                <span class="item-qty">{{ item.cantidad }}x</span>
+                                                {{ item.producto.nombre }}
+                                                <small style="color: var(--text-muted);">(${{ item.precio_unitario }} c/u)</small>
+                                            </span>
+                                            <strong>${{ item.subtotal }}</strong>
+                                        </div>
+                                    {% empty %}
+                                        <div class="ticket-item">
+                                            <span>Sin platillos registrados en el ticket</span>
+                                            <strong>$0.00</strong>
+                                        </div>
+                                    {% endfor %}
+
+                                    <div class="ticket-footer">
+                                        <span>Total a pagar al recibir</span>
+                                        <strong style="font-size: 16px; color: var(--accent-red);">${{ pedido.total_calculado }}</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div id="empty-active" class="empty-box">
+                        <span>🍽️</span>
+                        <p>No tienes pedidos pendientes de entrega en este momento.<br>Usa el botón <strong>"✨ Mostrar Vista Previa"</strong> arriba para ver la animación.</p>
+                    </div>
+                {% endfor %}
+
+                <!-- WIDGET DEMO EN CURSO (Oculto por defecto) -->
+                <div id="demo-active-widget" class="order-widget expanded" style="display: none;" onclick="toggleOrderWidget(this)">
+                    <div class="widget-summary">
+                        <div class="widget-left">
+                            <div class="store-icon-box">🫔</div>
+                            <div class="widget-title">
+                                <h3>TamalITA (Vista Previa)</h3>
+                                <p class="widget-meta">
+                                    <span class="folio-tag">#A8F92B1C</span>
+                                    <span class="badge-status badge-active">
+                                        <span class="pulse-dot"></span> Pendiente de entrega
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="widget-right">
+                            <span class="price-tag">$65.00</span>
+                            <div class="chevron-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="widget-collapse">
+                        <div class="widget-body">
+                            <div class="tracker-box">
+                                <div class="animated-scene">
+                                    <span class="floating-emoji">🍳</span>
+                                    <span class="scene-status-text">¡TamalITA está preparando tu orden para llevarla a tu punto de encuentro!</span>
+                                </div>
+                                <div class="progress-track">
+                                    <div class="progress-line-bg"></div>
+                                    <div class="progress-line-fill"></div>
+                                    <div class="step-node completed">
+                                        <div class="step-circle">✓</div>
+                                        <span class="step-label">Ordenado</span>
+                                    </div>
+                                    <div class="step-node current">
+                                        <div class="step-circle">2</div>
+                                        <span class="step-label">En Proceso</span>
+                                    </div>
+                                    <div class="step-node">
+                                        <div class="step-circle">3</div>
+                                        <span class="step-label">En Punto ITA</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="delivery-info-grid">
+                                <div class="info-pill-box">
+                                    <span>📍 Punto de Encuentro</span>
+                                    <strong>Edificio de Sistemas</strong>
+                                </div>
+                                <div class="info-pill-box">
+                                    <span>⏰ Hora Acordada</span>
+                                    <strong>11:30 AM</strong>
+                                </div>
+                            </div>
+
+                            <div class="ticket-breakdown">
+                                <p class="ticket-title">Desglose de tu ticket (Folio #A8F92B1C)</p>
+                                <div class="ticket-item">
+                                    <span><span class="item-qty">2x</span> Tamal de Rajas <small style="color: var(--text-muted);">($20.00 c/u)</small></span>
+                                    <strong>$40.00</strong>
+                                </div>
+                                <div class="ticket-item">
+                                    <span><span class="item-qty">1x</span> Atole de Olla <small style="color: var(--text-muted);">($25.00 c/u)</small></span>
+                                    <strong>$25.00</strong>
+                                </div>
+                                <div class="ticket-footer">
+                                    <span>Total a pagar al recibir</span>
+                                    <strong style="font-size: 16px; color: var(--accent-red);">$65.00</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- ==========================================
+                 MITAD DERECHA: HISTORIAL (COMPLETADO / CANCELADO)
+                 ========================================== -->
+            <section class="column-box">
+                <div class="column-header">
+                    <h2 class="column-title">📜 Historial de Pedidos</h2>
+                    <span class="count-pill">{{ historial_pedidos|length }}</span>
+                </div>
+
+                {% for pedido in historial_pedidos %}
+                    <div class="order-widget" onclick="toggleOrderWidget(this)">
+                        <div class="widget-summary">
+                            <div class="widget-left">
+                                <div class="store-icon-box" style="background: #F1F5F9;">
+                                    {% if pedido.negocio.logo %}
+                                        <img src="{{ pedido.negocio.logo.url }}" alt="{{ pedido.negocio.nombre }}">
+                                    {% else %}
+                                        🛍️
+                                    {% endif %}
+                                </div>
+                                <div class="widget-title">
+                                    <h3>{{ pedido.negocio.nombre }}</h3>
+                                    <p class="widget-meta">
+                                        <span class="folio-tag">#{{ pedido.folio }}</span>
+                                        <span>{{ pedido.fecha_creacion|date:"d M Y" }}</span>
+                                        <span class="badge-status {% if pedido.estado == 'COMPLETADO' %}badge-completed{% else %}badge-cancelled{% endif %}">
+                                            {{ pedido.get_estado_display }}
+                                        </span>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="widget-right">
+                                <span class="price-tag">${{ pedido.total_calculado }}</span>
+                                <div class="chevron-icon">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="widget-collapse">
+                            <div class="widget-body">
+                                <div class="delivery-info-grid">
+                                    <div class="info-pill-box">
+                                        <span>📍 Punto de Entrega</span>
+                                        <strong>{{ pedido.get_punto_encuentro_display }}</strong>
+                                    </div>
+                                    <div class="info-pill-box">
+                                        <span>⏰ Horario</span>
+                                        <strong>{{ pedido.horario_entrega|time:"h:i A" }}</strong>
+                                    </div>
+                                </div>
+
+                                <div class="ticket-breakdown">
+                                    <p class="ticket-title">Resumen de lo que pediste</p>
+                                    {% for item in pedido.items.all %}
+                                        <div class="ticket-item">
+                                            <span>
+                                                <span class="item-qty">{{ item.cantidad }}x</span>
+                                                {{ item.producto.nombre }}
+                                            </span>
+                                            <strong>${{ item.subtotal }}</strong>
+                                        </div>
+                                    {% endfor %}
+                                    <div class="ticket-footer">
+                                        <span>Total del pedido</span>
+                                        <strong>${{ pedido.total_calculado }}</strong>
+                                    </div>
+                                </div>
+
+                                <a href="{% url 'detalle_negocio' pedido.negocio.id %}" class="btn-reorder" onclick="event.stopPropagation();">
+                                    🔄 Volver a ver el menú de {{ pedido.negocio.nombre }}
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div id="empty-history" class="empty-box">
+                        <span>🕰️</span>
+                        <p>Aún no tienes pedidos completados o cancelados en tu historial.</p>
+                    </div>
+                {% endfor %}
+
+                <!-- WIDGET DEMO HISTORIAL (Oculto por defecto) -->
+                <div id="demo-history-widget" class="order-widget" style="display: none;" onclick="toggleOrderWidget(this)">
+                    <div class="widget-summary">
+                        <div class="widget-left">
+                            <div class="store-icon-box" style="background: #F1F5F9;">✅</div>
+                            <div class="widget-title">
+                                <h3>TamalITA (Vista Previa)</h3>
+                                <p class="widget-meta">
+                                    <span class="folio-tag">#7C41D90E</span>
+                                    <span>15 Oct 2026</span>
+                                    <span class="badge-status badge-completed">Entregado y confirmado</span>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="widget-right">
+                            <span class="price-tag">$40.00</span>
+                            <div class="chevron-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="widget-collapse">
+                        <div class="widget-body">
+                            <div class="delivery-info-grid">
+                                <div class="info-pill-box">
+                                    <span>📍 Punto de Entrega</span>
+                                    <strong>Sala Isóptica</strong>
+                                </div>
+                                <div class="info-pill-box">
+                                    <span>⏰ Horario</span>
+                                    <strong>01:00 PM</strong>
+                                </div>
+                            </div>
+
+                            <div class="ticket-breakdown">
+                                <p class="ticket-title">Resumen de lo que pediste</p>
+                                <div class="ticket-item">
+                                    <span><span class="item-qty">2x</span> Tamal Verde de Pollo</span>
+                                    <strong>$40.00</strong>
+                                </div>
+                                <div class="ticket-footer">
+                                    <span>Total pagado</span>
+                                    <strong>$40.00</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- MENÚ LATERAL DERECHO -->
+    <nav class="right-sidebar">
+        <div class="user-greeting">
+            <p>Hola de nuevo,</p>
+            <h2>{{ request.user.first_name|default:request.user.username }}</h2>
+        </div>
+
+        <div class="menu-links">
+            <a href="{% url 'inicio_cliente' %}" class="menu-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                Inicio
+            </a>
+            <a href="{% url 'perfil' %}" class="menu-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                Mi Perfil
+            </a>
+            <a href="{% url 'mis_pedidos' %}" class="menu-item active">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                Mis Pedidos
+            </a>
+            <a href="#" class="menu-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                Sugerencias
+            </a>
+            <a href="#" class="menu-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                Quiénes Somos
+            </a>
+
+            <a href="{% url 'logout' %}" class="menu-item logout-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                Cerrar Sesión
+            </a>
+        </div>
+    </nav>
+
+    <script>
+        function toggleOrderWidget(widget) {
+            widget.classList.toggle('expanded');
+        }
+
+        function activarModoDemo() {
+            const demoActive = document.getElementById('demo-active-widget');
+            const demoHistory = document.getElementById('demo-history-widget');
+            const emptyActive = document.getElementById('empty-active');
+            const emptyHistory = document.getElementById('empty-history');
+
+            const isHidden = demoActive.style.display === 'none';
+            demoActive.style.display = isHidden ? 'block' : 'none';
+            demoHistory.style.display = isHidden ? 'block' : 'none';
+
+            if (emptyActive) emptyActive.style.display = isHidden ? 'none' : 'block';
+            if (emptyHistory) emptyHistory.style.display = isHidden ? 'none' : 'block';
+        }
+    </script>
+</body>
+</html>

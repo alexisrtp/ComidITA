@@ -16,4 +16,8 @@ urlpatterns = [
     path('negocio/<int:id>/', views.detalle_negocio, name='detalle_negocio'),
     path('panel-emprendedor/editar/<int:id>/', views.editar_producto, name='editar_producto'),
     path('panel-emprendedor/editar-perfil/', views.editar_perfil_negocio, name='editar_perfil_negocio'),
+    path('mis_pedidos/', views.mis_pedidos_view, name='mis_pedidos'),
+    path('negocio/<int:id>/pedir/', views.crear_pedido, name='crear_pedido'),
+    path('panel-emprendedor/pedidos/', views.panel_pedidos_emprendedor, name='panel_pedidos_emprendedor'),
+    path('pedido/<int:pedido_id>/actualizar/', views.actualizar_estado_pedido, name='actualizar_estado_pedido'),
 ]
